@@ -23,14 +23,10 @@ import MenuList from '@mui/material/MenuList'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
-import { Box, CircularProgress, Collapse, List, ListItemButton, ListItemText } from '@mui/material'
+import { Box } from '@mui/material'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
-
-import { useQuery } from '@tanstack/react-query'
-import axiosConfig from '@/libs/auth/axios'
-import { Icon } from '@iconify/react'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -82,21 +78,35 @@ const UserDropdownInstitution = () => {
 
   return (
     <>
-      <Badge
+      <Box
         ref={anchorRef}
-        overlap='circular'
-        badgeContent={<BadgeContentSpan onClick={handleDropdownOpen} />}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        className='mis-2'
+        onClick={handleDropdownOpen}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          cursor: 'pointer'
+        }}
       >
-        <Avatar
-          ref={anchorRef}
-          alt={session?.user?.name || ''}
-          src={session?.user?.image || ''}
-          onClick={handleDropdownOpen}
-          className='cursor-pointer bs-[38px] is-[38px]'
-        />
-      </Badge>
+        <Badge
+          overlap='circular'
+          badgeContent={<BadgeContentSpan />}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} className='bs-[38px] is-[38px]' />
+        </Badge>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <Typography fontSize={11} fontWeight={600} lineHeight={1.2}>
+            {session?.user?.user?.first_name} {session?.user?.user?.last_name}
+          </Typography>
+
+          <Typography variant='caption' fontSize={10} color='text.secondary' lineHeight={1.2}>
+            مدیر سیستم مشاوره
+          </Typography>
+        </Box>
+      </Box>
+
       <Popper
         open={open}
         transition

@@ -23,55 +23,14 @@ import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useCreateEvaluationOrganization } from '@/hooks/organization/useConsultationSubsidyOrganization'
-
-const gradients = [
-  'linear-gradient(135deg, #a3bffa, #818cf8)',
-  'linear-gradient(135deg, #fcd5ce, #f9a8d4)',
-  'linear-gradient(135deg, #c6f6d5, #4ade80)',
-  'linear-gradient(135deg, #ffe7ba, #fbbf24)',
-  'linear-gradient(135deg, #dbeafe, #93c5fd)',
-  'linear-gradient(135deg, #fce7f3, #f9a8d4)',
-  'linear-gradient(135deg, #fde68a, #fcd34d)',
-  'linear-gradient(135deg, #d1fae5, #6ee7b7)'
-]
-
-function InfoBox({ icon, title, value, subValue, bg }: any) {
-  return (
-    <Box
-      sx={{
-        backgroundColor: bg,
-        borderRadius: 3,
-        p: 3,
-        height: '100%',
-        textAlign: 'center',
-        transition: '0.3s',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
-        }
-      }}
-    >
-      <Box mb={1}>{icon}</Box>
-
-      <Typography variant='body2' color='text.secondary' mb={1}>
-        {title}
-      </Typography>
-
-      <Typography variant='h6' fontWeight='bold'>
-        {value}
-      </Typography>
-
-      {subValue && (
-        <Typography variant='caption' color='text.secondary'>
-          {subValue}
-        </Typography>
-      )}
-    </Box>
-  )
-}
+import TableConsultationVouchers from '@/components/pages/institution/consultationSubsidy/TableConsultationVouchers'
+import InfoBox from '@/components/elements/InfoBox'
+import { gradients } from '@/configs/bgColor'
+import CustomAsyncAutocomplete from '@/components/elements/CustomAsyncAutocomplete'
+import { GeTErrorFetch } from '@/components/elements/errorHandler'
 
 export default function PendingApprovalFormOrganization({ data, show, id, evaluationId }: any) {
-  console.log(show, data, 'test')
+  console.log(show, 'show')
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
   const router = useRouter()
 
@@ -81,12 +40,12 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
       consultation_subsidy_rejection_reason_ids: [],
       description: '',
       subsidy_percentage: '',
-      meeting_count: ''
+      meeting_count: '',
+      credit_id: null
     }
   })
 
   const { mutateAsync: create, isPending: loadingCreate }: any = useCreateEvaluationOrganization()
-
   async function onSubmit(values: any) {
     try {
       let data = {}
@@ -95,7 +54,8 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
           consultation_subsidy_status_id: values?.consultation_subsidy_status_id,
           subsidy_percentage: values?.subsidy_percentage,
           meeting_count: values?.meeting_count,
-          description: values?.description
+          description: values?.description,
+          credit_id: values?.credit_id?.id
         }
       } else {
         data = {
@@ -104,18 +64,15 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
           description: values?.description
         }
       }
-      console.log(data, 'data')
-
       const res: any = await toast.promise(create({ data: data, id: id, evaluationId: evaluationId }), {
         pending: 'در حال انجام....'
       })
-      console.log(res, 'res')
 
       if (res?.status) {
         router.back()
       }
     } catch (error) {
-      throw error
+      GeTErrorFetch({ error, setError })
     }
   }
 
@@ -125,43 +82,32 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
 
   return (
     <>
-      <Card
-        sx={{
-          boxShadow: '0 10px 30px rgba(0,0,0,0.08)'
-        }}
-      >
+      <Card>
         <CardHeader
-          sx={{ textAlign: 'center', pb: 0 }}
+          sx={{ textAlign: 'center', pb: 1, mb: 5 }}
           title={
-            <Typography variant='h6' fontWeight='bold'>
-              اطلاعات پرونده
+            <Typography variant='h6' fontWeight={800}>
+              اطلاعات درخواست
             </Typography>
           }
           subheader={
             <Typography variant='caption' color='text.secondary'>
-              ابتدا لطفاً پرونده مورد نظر خود را انتخاب کنید
+              می توانید اطلاعات درخواست یارانه را مشاهده کنید را مشاهده کنید
             </Typography>
           }
         />
-
-        <CardContent sx={{ mt: 4 }}>
+        <CardContent>
           <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
-              <InfoBox
-                icon={<BiFile size={34} color='#2e7d32' />}
-                title='شماره پرونده'
-                value={show ? `${show?.consultationDocuments[0]?.document_number}` : '—'}
-                subValue={show?.evaluationInstitution ? `${show?.evaluationInstitution?.name}` : '—'}
-                bg='#eef7f0'
-              />
+              <InfoBox icon={<BiFile size={34} color='#2e7d32' />} title='درخواست' value={show?.name} bg='#eef7f0' />
             </Grid>
 
             <Grid item xs={12} md={3}>
               <InfoBox
                 icon={<BiUser size={34} color='#0288d1' />}
-                title='مشاور'
-                value={advisor ? `${advisor.first_name} ${advisor.last_name}` : '—'}
-                subValue={advisor?.username ? `(${advisor.username})` : ''}
+                title='درصد تخفیف / تعداد جلسه'
+                subValue={`${show?.meeting_count} جلسه`}
+                value={`${show.subsidy_percentage} درصد تخفیف`}
                 bg='#eef5fb'
               />
             </Grid>
@@ -169,13 +115,9 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
             <Grid item xs={12} md={3}>
               <InfoBox
                 icon={<BiFemale size={34} color='#ef6c00' />}
-                title='خدمت گیرنده'
-                value={
-                  show
-                    ? `${show?.consultationDocuments[0]?.first_name} ${show?.consultationDocuments[0]?.last_name}`
-                    : '—'
-                }
-                subValue={show ? show?.consultationSubsidyType?.name : ''}
+                title='زمان انقضا'
+                value={show?.subsidy_expiration_date}
+                // subValue={show ? show?.consultationSubsidyType?.name : ''}
                 bg='#fff4eb'
               />
             </Grid>
@@ -184,8 +126,7 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
               <InfoBox
                 icon={<BiMoney size={34} color='#2e7d32' />}
                 title='هزینه جلسه'
-                value={show ? `${show?.consultationDocuments[0]?.consultation_fee} تومان` : '—'}
-                subValue={show ? `${show?.meeting_count} جلسه` : ''}
+                value={show?.consultation_fee}
                 bg='#eef7f0'
               />
             </Grid>
@@ -285,6 +226,43 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
           </Grid>
         </CardContent>
       </Card>
+
+      {show?.consultationVouchers?.length > 0 && (
+        <Card sx={{ mt: 5 }}>
+          <CardHeader
+            sx={{ textAlign: 'center' }}
+            title={
+              <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
+                یاری برگ ها{' '}
+              </Typography>
+            }
+            subheader={
+              <Typography variant='caption'>
+                می توانید فهرست یاری برگ های تخصیص گرفته به این درخواست یارانه را مشاهده کنید
+              </Typography>
+            }
+          />
+          <CardContent>
+            <TableConsultationVouchers
+              columns={[
+                { label: 'مرکز', key: ['meeting'] },
+                { label: 'جلسه', key: ['meeting.name'] },
+                { label: 'درصد یارانه', key: ['consultationSubsidy.subsidy_percentage'] },
+                { label: 'تاریخ انقضا', key: ['expires_at'] },
+                { label: 'وضعیت', key: ['consultationVoucherStatus.name'] }
+              ]}
+              title='فهرست جلسات حضوری'
+              description='می توانید فهرست جلسات حضوری را مشاهده کنید'
+              rows={show?.consultationVouchers}
+              isLoading={false}
+              id={id}
+              onOpen={() => true}
+              upsertData={[]}
+              disabled={false}
+            />
+          </CardContent>
+        </Card>
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card
           sx={{
@@ -378,7 +356,7 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
 
               {watch('consultation_subsidy_status_id') == 1 && (
                 <>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Controller
                       name='subsidy_percentage'
                       control={control}
@@ -394,7 +372,26 @@ export default function PendingApprovalFormOrganization({ data, show, id, evalua
                     />
                   </Grid>
 
-                  <Grid item xs={6}>
+                  <Grid item xs={12} md={4}>
+                    <Controller
+                      name='credit_id'
+                      control={control}
+                      render={({ field: { onChange, value }, fieldState: { error } }) => (
+                        <CustomAsyncAutocomplete
+                          url={`/organization/${id}/consultation-subsidy/base/select/credit`}
+                          readOnly={false}
+                          onAddValue={newValue => onChange(newValue)}
+                          value={value}
+                          getOptionLabel={optien => optien?.name}
+                          label='اعتبار سازمان'
+                          error={!!error}
+                          helperText={error?.message}
+                        ></CustomAsyncAutocomplete>
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={4}>
                     <Controller
                       name='meeting_count'
                       control={control}

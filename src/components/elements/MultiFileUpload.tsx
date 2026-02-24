@@ -1,27 +1,58 @@
 // 'use client'
 
-// import { useState } from 'react'
+// import { useEffect, useState } from 'react'
 // import { Box, Button, IconButton, Typography } from '@mui/material'
 // import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew'
 // import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 // import DeleteIcon from '@mui/icons-material/Delete'
 
 // type FileItem = {
-//   file: File // ← خود فایل واقعی برای آپلود
-//   preview: string // ← فقط برای نمایش
+//   file: File
+//   preview: string
 //   type: 'video' | 'audio' | 'image' | 'pdf' | 'other'
 // }
+
 // type Props = {
 //   files: FileItem[]
 //   setFiles: React.Dispatch<React.SetStateAction<FileItem[]>>
 //   dataFiles: any[]
+//   disabled: any
 // }
 
-// export default function MultiFileViewer({ files, setFiles, dataFiles }: Props) {
-//   console.log(dataFiles, 'DATA FILEEEEEEEEE')
+// export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }: Props) {
 //   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
 //   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 //   const [currentAudioIndex, setCurrentAudioIndex] = useState(0)
+
+//   // 👇 فقط اضافه شده: تبدیل فایل‌های بک‌اند به ساختار viewer بدون تغییر UI
+//   useEffect(() => {
+//     if (!dataFiles || dataFiles.length === 0) return
+
+//     setFiles(prev => {
+//       if (prev.length > 0) return prev
+
+//       const mapped: FileItem[] = dataFiles.map((f: any) => {
+//         let type: FileItem['type'] = 'other'
+
+//         const ext = f.mime_type?.toLowerCase() || f.original_name?.split('.').pop()?.toLowerCase()
+
+//         if (['mp4', 'mov', 'avi', 'mpeg'].includes(ext)) type = 'video'
+//         else if (['mp3', 'wav', 'ogg'].includes(ext)) type = 'audio'
+//         else if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) type = 'image'
+//         else if (ext === 'pdf') type = 'pdf'
+
+//         const fakeFile = new File([], f.original_name || f.name)
+
+//         return {
+//           file: fakeFile,
+//           preview: f.address, // ← لینک واقعی سرور
+//           type
+//         }
+//       })
+
+//       return mapped
+//     })
+//   }, [dataFiles, setFiles])
 
 //   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     if (!e.target.files) return
@@ -36,7 +67,7 @@
 
 //       return {
 //         file,
-//         preview: URL.createObjectURL(file), // فقط برای نمایش
+//         preview: URL.createObjectURL(file),
 //         type
 //       }
 //     })
@@ -45,7 +76,9 @@
 //   }
 
 //   const removeFile = (item: FileItem) => {
-//     URL.revokeObjectURL(item.preview)
+//     if (item.preview.startsWith('blob:')) {
+//       URL.revokeObjectURL(item.preview)
+//     }
 
 //     setFiles(prev => {
 //       const updated = prev.filter(f => f !== item)
@@ -79,23 +112,25 @@
 
 //   return (
 //     <Box maxWidth={820} mx='auto'>
-//       <Box border='1px solid #E5E7EB' borderRadius={1} overflow='hidden' display='flex' height={48} mb={4}>
-//         <label htmlFor='file-input'>
-//           <Button
-//             variant='contained'
-//             component='span'
-//             sx={{ height: '100%', borderRadius: 0, fontSize: '0.9rem', width: '10rem' }}
-//           >
-//             بارگذاری فایل
-//           </Button>
-//         </label>
+//       {!disabled && (
+//         <Box border='1px solid #E5E7EB' borderRadius={1} overflow='hidden' display='flex' height={48} mb={4}>
+//           <label htmlFor='file-input'>
+//             <Button
+//               variant='contained'
+//               component='span'
+//               sx={{ height: '100%', borderRadius: 0, fontSize: '0.9rem', width: '10rem' }}
+//             >
+//               بارگذاری فایل
+//             </Button>
+//           </label>
 
-//         <Box sx={{ display: 'flex', alignItems: 'center', px: 2, fontSize: 13, color: '#6B7280', width: '100%' }}>
-//           {files.length ? `${files.length} فایل انتخاب شده` : 'یک فایل انتخاب کنید'}
+//           <Box sx={{ display: 'flex', alignItems: 'center', px: 2, fontSize: 13, color: '#6B7280', width: '100%' }}>
+//             {files.length ? `${files.length} فایل انتخاب شده` : 'یک فایل انتخاب کنید'}
+//           </Box>
+
+//           <input id='file-input' type='file' multiple onChange={handleUpload} hidden />
 //         </Box>
-
-//         <input id='file-input' type='file' multiple onChange={handleUpload} hidden />
-//       </Box>
+//       )}
 
 //       {videos.length > 0 && (
 //         <Box position='relative' mb={4}>
@@ -251,103 +286,77 @@ type FileItem = {
 }
 
 type Props = {
-  files: FileItem[]
-  setFiles: React.Dispatch<React.SetStateAction<FileItem[]>>
-  dataFiles: any[]
-  disabled: any
+  file: FileItem | null
+  setFile: React.Dispatch<React.SetStateAction<FileItem | null>>
+  dataFile?: any
+  disabled?: boolean
 }
 
-export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }: Props) {
-  console.log(dataFiles, 'JLSJFLJSLDJFLSJDFLJSDLFJ')
+export default function MultiFileViewer({ file, setFile, dataFile, disabled }: Props) {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [currentAudioIndex, setCurrentAudioIndex] = useState(0)
 
-  // 👇 فقط اضافه شده: تبدیل فایل‌های بک‌اند به ساختار viewer بدون تغییر UI
   useEffect(() => {
-    if (!dataFiles || dataFiles.length === 0) return
+    if (!dataFile?.address) return
 
-    setFiles(prev => {
-      if (prev.length > 0) return prev
+    setFile(prev => {
+      if (prev) return prev
 
-      const mapped: FileItem[] = dataFiles.map((f: any) => {
-        let type: FileItem['type'] = 'other'
-
-        const ext = f.mime_type?.toLowerCase() || f.original_name?.split('.').pop()?.toLowerCase()
-
-        if (['mp4', 'mov', 'avi', 'mpeg'].includes(ext)) type = 'video'
-        else if (['mp3', 'wav', 'ogg'].includes(ext)) type = 'audio'
-        else if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) type = 'image'
-        else if (ext === 'pdf') type = 'pdf'
-
-        const fakeFile = new File([], f.original_name || f.name)
-
-        return {
-          file: fakeFile,
-          preview: f.address, // ← لینک واقعی سرور
-          type
-        }
-      })
-
-      return mapped
-    })
-  }, [dataFiles, setFiles])
-
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-
-    const newFiles: FileItem[] = Array.from(e.target.files).map(file => {
       let type: FileItem['type'] = 'other'
 
-      if (file.type.startsWith('video')) type = 'video'
-      else if (file.type.startsWith('audio')) type = 'audio'
-      else if (file.type.startsWith('image')) type = 'image'
-      else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) type = 'pdf'
+      const ext = dataFile.mime_type?.toLowerCase() || dataFile.original_name?.split('.').pop()?.toLowerCase()
+
+      if (['mp4', 'mov', 'avi', 'mpeg'].includes(ext)) type = 'video'
+      else if (['mp3', 'wav', 'ogg'].includes(ext)) type = 'audio'
+      else if (['jpg', 'jpeg', 'png', 'gif', 'svg'].includes(ext)) type = 'image'
+      else if (ext === 'pdf') type = 'pdf'
+
+      const fakeFile = new File([], dataFile.original_name || dataFile.name || 'file')
 
       return {
-        file,
-        preview: URL.createObjectURL(file),
+        file: fakeFile,
+        preview: dataFile.address,
         type
       }
     })
+  }, [dataFile, setFile])
 
-    setFiles(prev => [...prev, ...newFiles])
-  }
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
 
-  const removeFile = (item: FileItem) => {
-    if (item.preview.startsWith('blob:')) {
-      URL.revokeObjectURL(item.preview)
+    const file = e.target.files[0]
+
+    let type: FileItem['type'] = 'other'
+
+    if (file.type.startsWith('video')) type = 'video'
+    else if (file.type.startsWith('audio')) type = 'audio'
+    else if (file.type.startsWith('image')) type = 'image'
+    else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) type = 'pdf'
+
+    const newFile: FileItem = {
+      file,
+      preview: URL.createObjectURL(file),
+      type
     }
 
-    setFiles(prev => {
-      const updated = prev.filter(f => f !== item)
-
-      if (currentVideoIndex >= updated.filter(f => f.type === 'video').length) {
-        setCurrentVideoIndex(0)
-      }
-      if (currentImageIndex >= updated.filter(f => f.type === 'image').length) {
-        setCurrentImageIndex(0)
-      }
-      if (currentAudioIndex >= updated.filter(f => f.type === 'audio').length) {
-        setCurrentAudioIndex(0)
-      }
-
-      return updated
+    setFile(prev => {
+      if (prev?.preview?.startsWith('blob:')) URL.revokeObjectURL(prev.preview)
+      return newFile
     })
   }
 
-  const videos = files.filter(f => f.type === 'video')
-  const images = files.filter(f => f.type === 'image')
-  const audios = files.filter(f => f.type === 'audio')
+  const removeFile = () => {
+    if (file?.preview?.startsWith('blob:')) URL.revokeObjectURL(file.preview)
+    setFile(null)
+  }
 
-  const prevVideo = () => setCurrentVideoIndex(i => (i === 0 ? videos.length - 1 : i - 1))
-  const nextVideo = () => setCurrentVideoIndex(i => (i === videos.length - 1 ? 0 : i + 1))
+  const videos = file && file.type === 'video' ? [file] : []
+  const images = file && file.type === 'image' ? [file] : []
+  const audios = file && file.type === 'audio' ? [file] : []
 
-  const prevImage = () => setCurrentImageIndex(i => (i === 0 ? images.length - 1 : i - 1))
-  const nextImage = () => setCurrentImageIndex(i => (i === images.length - 1 ? 0 : i + 1))
-
-  const prevAudio = () => setCurrentAudioIndex(i => (i === 0 ? audios.length - 1 : i - 1))
-  const nextAudio = () => setCurrentAudioIndex(i => (i === audios.length - 1 ? 0 : i + 1))
+  const prevVideo = () => setCurrentVideoIndex(0)
+  const nextVideo = () => setCurrentVideoIndex(0)
 
   return (
     <Box maxWidth={820} mx='auto'>
@@ -364,18 +373,17 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
           </label>
 
           <Box sx={{ display: 'flex', alignItems: 'center', px: 2, fontSize: 13, color: '#6B7280', width: '100%' }}>
-            {files.length ? `${files.length} فایل انتخاب شده` : 'یک فایل انتخاب کنید'}
+            {file ? file.file.name : 'یک فایل انتخاب کنید'}
           </Box>
 
-          <input id='file-input' type='file' multiple onChange={handleUpload} hidden />
+          <input id='file-input' type='file' onChange={handleUpload} hidden />
         </Box>
       )}
-
       {videos.length > 0 && (
         <Box position='relative' mb={4}>
           <IconButton
             onClick={prevVideo}
-            disabled={videos.length === 1}
+            disabled
             sx={{ position: 'absolute', left: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowBackIosNewIcon />
@@ -383,7 +391,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
 
           <IconButton
             onClick={nextVideo}
-            disabled={videos.length === 1}
+            disabled
             sx={{ position: 'absolute', right: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowForwardIosIcon />
@@ -394,7 +402,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
               <Typography fontSize={12} color='#374151'>
                 {videos[currentVideoIndex].file.name}
               </Typography>
-              <IconButton size='small' onClick={() => removeFile(videos[currentVideoIndex])}>
+              <IconButton size='small' onClick={removeFile}>
                 <DeleteIcon fontSize='small' />
               </IconButton>
             </Box>
@@ -408,7 +416,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
 
             <Box display='flex' justifyContent='center' py={1} bgcolor='#F9FAFB'>
               <Typography fontSize={12} color='#6B7280'>
-                {currentVideoIndex + 1} / {videos.length}
+                1 / 1
               </Typography>
             </Box>
           </Box>
@@ -418,16 +426,14 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
       {audios.length > 0 && (
         <Box position='relative' mb={4}>
           <IconButton
-            onClick={prevAudio}
-            disabled={audios.length === 1}
+            disabled
             sx={{ position: 'absolute', left: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowBackIosNewIcon />
           </IconButton>
 
           <IconButton
-            onClick={nextAudio}
-            disabled={audios.length === 1}
+            disabled
             sx={{ position: 'absolute', right: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowForwardIosIcon />
@@ -438,7 +444,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
               <Typography fontSize={12} color='#374151'>
                 {audios[currentAudioIndex].file.name}
               </Typography>
-              <IconButton size='small' onClick={() => removeFile(audios[currentAudioIndex])}>
+              <IconButton size='small' onClick={removeFile}>
                 <DeleteIcon fontSize='small' />
               </IconButton>
             </Box>
@@ -454,7 +460,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
 
             <Box display='flex' justifyContent='center' py={1} bgcolor='#F9FAFB'>
               <Typography fontSize={12} color='#6B7280'>
-                {currentAudioIndex + 1} / {audios.length}
+                1 / 1
               </Typography>
             </Box>
           </Box>
@@ -464,16 +470,14 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
       {images.length > 0 && (
         <Box position='relative'>
           <IconButton
-            onClick={prevImage}
-            disabled={images.length === 1}
+            disabled
             sx={{ position: 'absolute', left: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowBackIosNewIcon />
           </IconButton>
 
           <IconButton
-            onClick={nextImage}
-            disabled={images.length === 1}
+            disabled
             sx={{ position: 'absolute', right: -48, top: '50%', transform: 'translateY(-50%)', bgcolor: '#F3F4F6' }}
           >
             <ArrowForwardIosIcon />
@@ -484,7 +488,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
               <Typography fontSize={12} color='#374151'>
                 {images[currentImageIndex].file.name}
               </Typography>
-              <IconButton size='small' onClick={() => removeFile(images[currentImageIndex])}>
+              <IconButton size='small' onClick={removeFile}>
                 <DeleteIcon fontSize='small' />
               </IconButton>
             </Box>
@@ -500,7 +504,7 @@ export default function MultiFileViewer({ files, setFiles, dataFiles, disabled }
 
             <Box display='flex' justifyContent='center' py={1} bgcolor='#F9FAFB'>
               <Typography fontSize={12} color='#6B7280'>
-                {currentImageIndex + 1} / {images.length}
+                1 / 1
               </Typography>
             </Box>
           </Box>

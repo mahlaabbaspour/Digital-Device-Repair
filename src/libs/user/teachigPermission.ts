@@ -40,11 +40,9 @@ export const createTeachingPermission = async function (fromData: any) {
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -72,11 +70,9 @@ export const updateTeachingPermission = async function (fromData: any) {
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     formData.append('_method', 'put')
@@ -136,11 +132,9 @@ export const createHistoryStudyTeachingPermission = async function (fromData: an
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -167,11 +161,9 @@ export const updateHistoryStudyTeachingPermission = async function (fromData: an
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     formData.append('_method', 'put')
@@ -230,11 +222,9 @@ export const createHistoryEducationTeachingPermission = async function (fromData
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -261,11 +251,9 @@ export const updateHistoryEducationTeachingPermission = async function (fromData
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     formData.append('_method', 'put')
@@ -324,11 +312,9 @@ export const createHistoryTeachingTeachingPermission = async function (fromData:
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -355,11 +341,9 @@ export const updateHistoryTeachingTeachingPermission = async function (fromData:
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     formData.append('_method', 'put')
@@ -418,11 +402,9 @@ export const createHistoryComposingTeachingPermission = async function (fromData
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -449,11 +431,9 @@ export const updateHistoryComposingTeachingPermission = async function (fromData
       if (Array.isArray(fromData?.data[key])) {
         fromData?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, fromData?.data[key] ?? '')
-        console.log(key, fromData?.data[key])
       }
     })
     formData.append('_method', 'put')

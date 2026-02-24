@@ -63,7 +63,6 @@ export default function UpdateExamModal({
       exam_type_id: null
     }
   })
-  console.log(rowSelect, 'rowwwwwwwwwwwwwwwwwwwwwwwwww')
 
   const [instruction, setInstruction] = useState(EditorState.createEmpty())
 
@@ -120,8 +119,6 @@ export default function UpdateExamModal({
         exam_type_id: values?.exam_type_id?.id,
         instruction: test1
       }
-      console.log(data, 'data')
-      console.log(values, 'values')
       await toast.promise(mutateAsync({ data: data, id, courseId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })

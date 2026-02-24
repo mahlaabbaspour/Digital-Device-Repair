@@ -107,7 +107,6 @@ export default function RequestShowForm({
   dataTeaching,
   dataComposing
 }: any) {
-  console.log(show, 'show')
   const { settings } = useSettings()
   const [activeStep, setActiveStep] = useState<number>(0)
   const { control, handleSubmit, setError, watch, setValue, formState } = useForm({
@@ -174,7 +173,6 @@ export default function RequestShowForm({
 
   const onSubmit = async (values: any) => {
     try {
-      console.log(values, 'values')
       const result: any = {}
       Object.entries(values).forEach(([key, value]) => {
         if (value && typeof value === 'object' && 'id' in value) {
@@ -187,7 +185,6 @@ export default function RequestShowForm({
           result[key] = value
         }
       })
-      console.log(result, 'result')
 
       const res: any = await toast.promise(mutateAsync({ data: result, id: id, teachId: teachId }), {
         pending: 'در حال انجام...'
@@ -196,7 +193,7 @@ export default function RequestShowForm({
         router.push(`/user/${id}/teachigPermission/requestListTeaching`)
       }
     } catch (error) {
-      console.log(error, 'error')
+      throw error
     }
   }
 

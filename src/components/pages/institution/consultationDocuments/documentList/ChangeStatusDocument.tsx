@@ -39,7 +39,6 @@ export default function CreateReservationMeetingSingle({
   id: string
   selectedRow: any
 }) {
-  console.log(selectedRow, 'elejsldfjldsjflkjsdkl')
   const { control, handleSubmit, setError, clearErrors, setValue, watch } = useForm({
     defaultValues: {
       consultation_document_status_id: null,
@@ -58,7 +57,6 @@ export default function CreateReservationMeetingSingle({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       if (!values?.consultation_document_status_id) {
         toast.error('ایتدا وضعیت پرونده را انتخاب کنید')
       }
@@ -68,14 +66,12 @@ export default function CreateReservationMeetingSingle({
         target_institution_id: values?.target_institution_id?.id ?? null,
         referral_description: values?.referral_description
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(mutateAsync({ data: data, id: id, rowId: selectedRow?.id }), {
         pending: ' در حال انجام ...'
       })
       onClose()
     } catch (error) {
-      console.log(error, 'error')
       GeTErrorFetch({ error, setError })
     }
   }

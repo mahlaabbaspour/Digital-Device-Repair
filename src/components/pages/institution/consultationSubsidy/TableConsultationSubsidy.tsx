@@ -45,13 +45,13 @@ export default function RequestListInstitutionTable({ id }: any) {
         checkboxEnabled={false}
         titleTable={{
           title: 'فهرست درخواست ها',
-          description: 'می توانید فهرست درخواست ها را مشاهده کنید'
+          description: 'می توانید فهرست درخواست های مرکز را مشاهده کنید'
         }}
         btnOperation={{
           status: () => true,
           delete: () => true,
           edit: () => false,
-          show: () => false
+          show: () => true
         }}
       />
     </>

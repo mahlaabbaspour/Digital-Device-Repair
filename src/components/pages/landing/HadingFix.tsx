@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import Navigation from './Navigation'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import UserDropdown from '@/components/layout/shared/UserDropdown'
 
 function HeadingFix() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -32,6 +34,7 @@ function HeadingFix() {
 
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up('lg'))
   const router = useRouter()
+  const session: any = useSession()
 
   return (
     <AppBarStyled position='fixed' elevation={0}>
@@ -48,9 +51,14 @@ function HeadingFix() {
               <Navigation />
             </Stack>
           ) : null}
-          <Button color='primary' variant='contained' onClick={() => router.push('/auth/login')}>
-            ورود
-          </Button>
+
+          {session?.data ? (
+            <UserDropdown />
+          ) : (
+            <Button color='primary' variant='contained' onClick={() => router.push('/auth/login')}>
+              ورود
+            </Button>
+          )}
         </ToolbarStyled>
       </Container>
     </AppBarStyled>

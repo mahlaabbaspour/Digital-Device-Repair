@@ -11,8 +11,6 @@ export default async function CreateRuequstListPage({ params }: any) {
   const { id } = await params
   const show = await fetchShowConsultationSubsidy(id)
   const data = await fetchUpsertDataConsultationSubsidy(id)
-  console.log(data, 'data')
-  console.log(show, 'show')
 
   const items = [
     {

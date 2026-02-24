@@ -34,7 +34,6 @@ import { useCreateConsultationSubsidyInstitution } from '@/hooks/institution/con
 
 export default function RequestFormInstitutionCreate({ data, show = {}, id }: any) {
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
-  console.log(selectedDocument, 'seleejrlej')
   const router = useRouter()
 
   const { control, handleSubmit, setError, clearErrors, setValue, watch } = useForm({
@@ -79,14 +78,11 @@ export default function RequestFormInstitutionCreate({ data, show = {}, id }: an
           }
         }
       }
-      console.log(data, 'data')
 
       const res = await toast.promise(create({ data: data, id: id }), {
         pending: 'در حال انجام....'
       })
       router.back()
-
-      console.log(res, 'res')
     } catch (error) {
       throw error
     }

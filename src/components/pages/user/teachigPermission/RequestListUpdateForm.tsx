@@ -196,7 +196,6 @@ export default function RequestUpdateForm({
     }
   }, [show])
 
-  console.log(show, 'show')
 
   useEffect(() => {
     if (show) {

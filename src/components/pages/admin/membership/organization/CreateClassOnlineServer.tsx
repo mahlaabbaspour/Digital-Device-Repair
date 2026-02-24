@@ -72,7 +72,6 @@ function CreateClassOnlineServer({ action, currentRow, id ,open, title, descript
             }
              
           } catch (error) {
-            console.log(error, 'error')
               GeTErrorFetch({error, setError})
           }
     }

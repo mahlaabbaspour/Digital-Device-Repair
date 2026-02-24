@@ -36,7 +36,7 @@ export default function PendingApprovalTable({ id }: any) {
   return (
     <>
       <CustomTable
-        baseUrl={`/organization/${id}/core/consultation-subsidy`}
+        baseUrl={`/organization/${id}/consultation-subsidy/core/consultation-subsidy`}
         queryKey='evaluationOrganization'
         textBtn=''
         btnShow={false}
@@ -57,9 +57,7 @@ export default function PendingApprovalTable({ id }: any) {
           {
             icon: <MdOutlineAssessment />,
             onClick: (row: any) =>
-              router.push(
-                `/organization/${id}/consultationServices/consultationSubsidy/pendingApproval/${row?.id}/evaluation`
-              ),
+              router.push(`/organization/${id}/consultationSubsidy/pendingApproval/${row?.id}/evaluation`),
             if: () => true,
             color: 'success',
             title: 'ارزیابی'

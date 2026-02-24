@@ -123,18 +123,3 @@ export function useUpdateDocumentAndDiagnoisisInstitution() {
 
   return { mutateAsync, isPending }
 }
-
-/////////////////////Document list
-
-export const useFetchDocumentList = (Data: any) => {
-  const params = Data?.params
-  return useQuery({
-    queryKey: ['institutionLandig', params],
-    queryFn: async () => {
-      const res = await axiosConfig.get(`/institution/${Data?.id}/meeting/core/consultation-meeting/`, {
-        params: params
-      })
-      return res.data?.data
-    }
-  })
-}

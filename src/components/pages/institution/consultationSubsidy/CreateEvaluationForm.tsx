@@ -70,7 +70,6 @@ function InfoBox({ icon, title, value, subValue, bg }: any) {
 }
 
 export default function EvaluationFormInstitutionCreate({ data, show, id, evaluationId }: any) {
-  console.log(data, show, evaluationId, 'daaaaaaaaaa')
   const [selectedDocument, setSelectedDocument] = useState<any>(null)
   const router = useRouter()
 

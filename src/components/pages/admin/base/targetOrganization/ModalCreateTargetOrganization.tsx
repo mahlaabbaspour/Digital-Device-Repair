@@ -41,7 +41,7 @@ export default function ModalLCreateTargetOrganization({
       const res = await toast.promise(mutateAsync(values), {
         pending: 'در حال انجام ...'
       })
-      console.log(res, 'res')
+
       await onClose()
       reset()
     } catch (error) {

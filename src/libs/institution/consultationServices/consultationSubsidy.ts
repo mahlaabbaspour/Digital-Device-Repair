@@ -17,6 +17,23 @@ export const fetchConsultationSubsidyUpsertData = async function (id: any) {
   }
 }
 
+export const fetchConsultationSubsidyShow = async function ({ id, requestId }: any) {
+  try {
+    const response = await axiosConfig.get(
+      `/institution/${id}/consultation-subsidy/core/consultation-subsidy/show/${requestId}`,
+      {
+        nextContext: true
+      }
+    )
+
+    const data = response.data?.data
+
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const fetchEvaluationShow = async function (Data: any) {
   try {
     const response = await axiosConfig.get(

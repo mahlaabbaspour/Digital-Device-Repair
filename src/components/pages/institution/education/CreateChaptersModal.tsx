@@ -46,7 +46,6 @@ export default function CreateChaptersModal({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       await toast.promise(mutateAsync({ data: values, id, courseId }), {
         pending: 'در حال انجام...'
       })

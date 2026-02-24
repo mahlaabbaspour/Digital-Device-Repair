@@ -49,7 +49,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
 export default function CalendarMeetingUser({ id, show }: any) {
   const [datas, setDatas] = useState<any>()
   const shifts = datas?.shifts?.length ? datas : show
-  console.log(shifts, 'shifts')
   const formateNowDate = shifts?.selected_date ? parse(shifts.selected_date, 'yyyy/MM/dd', new Date()) : null
   const formateExtDate = shifts?.ext_date ? parse(shifts.ext_date, 'yyyy/MM/dd', new Date()) : null
   const formatePrevDate = shifts?.prev_date ? parse(shifts.prev_date, 'yyyy/MM/dd', new Date()) : null
@@ -309,7 +308,6 @@ export default function CalendarMeetingUser({ id, show }: any) {
                                 </Table>
 
                                 {el.meetings?.map((m: any, index: number) => {
-                                  console.log(m, 'm')
                                   const toMinutes = (t: string) =>
                                     t
                                       .split(':')

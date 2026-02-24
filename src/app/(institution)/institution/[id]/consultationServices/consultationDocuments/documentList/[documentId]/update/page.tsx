@@ -12,10 +12,8 @@ export const metadata = {
 
 export default async function DocumentUpdate({ params }: any) {
   const { id, documentId } = await params
-  console.log(id, documentId, 'klfjldsjflds')
   const upsertData = await fetchDocumentUpsertData(id)
   const show = await fetchShowConsultationDocuments({ id: id, rowId: documentId })
-  console.log(show, 'show')
 
   const items = [
     {

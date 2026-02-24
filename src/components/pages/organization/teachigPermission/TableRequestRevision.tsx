@@ -37,7 +37,6 @@ const TableRequestsRevision = ({
   upsertData,
   disabled
 }: any) => {
-  console.log(columns, 'coulumns')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 

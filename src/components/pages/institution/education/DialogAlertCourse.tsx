@@ -28,7 +28,6 @@ export default function DialogAlertCourse({
   id,
   courseId
 }: any) {
-  console.log(rowSelect, 'rowSelect')
   return (
     <Modal
       aria-labelledby='transition-modal-title'

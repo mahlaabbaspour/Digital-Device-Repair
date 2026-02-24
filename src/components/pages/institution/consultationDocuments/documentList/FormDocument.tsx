@@ -26,7 +26,7 @@ import { toast } from 'react-toastify'
 import { GeTErrorFetch } from '@/components/elements/errorHandler'
 
 export default function FormDocumentConsultation({ id, upsertData }: any) {
-  console.log(upsertData, 'upsertData')
+  console.log(upsertData, 'upser')
   const [open, setOpen] = useState(false)
 
   const {
@@ -51,15 +51,12 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
       marital_id: null,
       employment_status_id: null,
       activity_field_area_ids: [],
-      consultation_subsidy_id: null,
       service_fee_type_id: null,
-      consultation_fee: '',
       service_recipient_type_ids: [],
       service_recipient_decile: ''
     }
   })
 
-  const [isSubsidyActive, setIsSubsidyActive] = useState(false)
   const anonymous = watch('anonymous')
   const [userData, setUserData] = useState<any>(null)
   const fetchAdvisorInfo = async (userId: number) => {
@@ -79,6 +76,12 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
   }
 
   useEffect(() => {
+    if (upsertData) {
+      setValue('consultation_fee', upsertData?.consultationFreeInstitution)
+    }
+  }, [upsertData])
+
+  useEffect(() => {
     if (userData) {
       setValue('first_name', userData?.first_name)
       setValue('last_name', userData?.last_name)
@@ -90,7 +93,7 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
       setValue('marital_id', userData?.marital)
       setValue('employment_status_id', userData?.employmentStatus)
     }
-  }, [userData])
+  }, [userData, upsertData])
 
   const { mutateAsync, isPending } = useCreateConsultationDocuments()
 
@@ -109,7 +112,6 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
           result[key] = value
         }
       })
-      console.log(result, 'result')
 
       await toast.promise(mutateAsync({ data: result, id: id }), {
         pending: 'در حال انجام...'
@@ -409,26 +411,6 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
                 />
               </Grid>
 
-              <Grid item xs={12}>
-                <Controller
-                  name='description'
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      multiline
-                      rows={3}
-                      InputProps={{ readOnly: false }}
-                      error={!!error}
-                      helperText={error?.message}
-                      {...field}
-                      value={field.value ?? ''}
-                      fullWidth
-                      label='توضیحات'
-                    />
-                  )}
-                />
-              </Grid>
-
               <Grid item xs={12} md={12}>
                 <Controller
                   name='activity_field_area_ids'
@@ -449,47 +431,21 @@ export default function FormDocumentConsultation({ id, upsertData }: any) {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12}>
                 <Controller
-                  name='service_fee_type_id'
-                  control={control}
-                  render={({ field: { value, onChange }, fieldState: { error } }) => (
-                    <Autocomplete
-                      readOnly={false}
-                      options={upsertData?.ServiceFreeTypes || []}
-                      value={value}
-                      onChange={(_, newvalue: any) => {
-                        onChange(newvalue)
-
-                        if (newvalue?.id === 2) {
-                          setIsSubsidyActive(true)
-                        } else if (newvalue?.id === 1) {
-                          setValue('consultation_fee', upsertData?.consultationFreeInstitution)
-                        } else if (newvalue?.id === 3) {
-                          setValue('consultation_fee', '0')
-                        }
-                      }}
-                      noOptionsText='هیچ نتیجه ای یافت نشد'
-                      getOptionLabel={(options: { name: string }) => options?.name || ''}
-                      renderInput={params => (
-                        <TextField label='نوع هزینه' {...params} error={!!error} helperText={error?.message} />
-                      )}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <Controller
-                  name='consultation_fee'
+                  name='description'
                   control={control}
                   render={({ field, fieldState: { error } }) => (
                     <TextField
-                      {...field}
-                      error={!!error}
+                      multiline
+                      rows={3}
                       InputProps={{ readOnly: false }}
+                      error={!!error}
                       helperText={error?.message}
+                      {...field}
+                      value={field.value ?? ''}
                       fullWidth
-                      label='هزینه مشاوره (هر جلسه )'
+                      label='توضیحات'
                     />
                   )}
                 />

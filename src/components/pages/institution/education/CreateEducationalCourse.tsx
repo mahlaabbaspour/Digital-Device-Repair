@@ -42,7 +42,6 @@ import { dateTimeConverter } from '@/helpers/DateHelpers'
 import { useCreateLessonEducation } from '@/hooks/institution/education/useLessonEducation'
 
 export default function CreateEducationalCourse({ id, revisionId, upsertData, show }: any) {
-  console.log(upsertData, 'upsertDataupsertData')
   const { control, handleSubmit, setError, reset, watch } = useForm({
     defaultValues: {
       lesson_id: null,

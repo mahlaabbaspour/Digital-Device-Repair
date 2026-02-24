@@ -18,7 +18,6 @@ export const fetchShowDiagnosisIndex = async function (Data: any) {
 
 export const fetchShowDiagnosis = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const response = await axiosConfig.get(
       `/super-user/${Data?.id}/core/consultation-document/${Data?.documentId}/consultation-diagnosis/show/${Data?.diagnosisId}`,
       {
@@ -35,7 +34,6 @@ export const fetchShowDiagnosis = async function (Data: any) {
 
 export const updateDiagnosisAndDocument = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const response = await axiosConfig.put(
       `/super-user/${Data?.id}/core/consultation-document/update-consultation/${Data?.documentId}`,
       Data?.data
@@ -64,7 +62,6 @@ export const changeStatusDocumentConsultant = async function (fromData: any) {
 
 export const fetchDiagnosisShow = async function (Data: any) {
   try {
-    console.log(Data, 'DATA')
     const response = await axiosConfig.get(
       `/super-user/${Data?.id}/core/consultation-document/${Data?.documentId}/consultation-diagnosis`,
       {

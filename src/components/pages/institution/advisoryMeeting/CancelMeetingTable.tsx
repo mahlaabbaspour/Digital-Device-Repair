@@ -2,9 +2,8 @@
 
 import CustomChip from '@/@core/components/mui/chip/index'
 import CustomTable from '@/components/elements/customTable/CustomTable'
-import { useChangeDocument } from '@/hooks/institution/consultationDocuments/useDocumentList'
 import { useState } from 'react'
-import { BiAdjust, BiShow, BiSync } from 'react-icons/bi'
+import { BiAdjust, BiShow } from 'react-icons/bi'
 import MeetingStatusModal from './CancelStatusModal'
 import MeetingCancelledShowModal from './CancelShowModal'
 
@@ -43,17 +42,10 @@ export default function CancleMeetingTable({ id }: any) {
   const [open, setOpen] = useState(false)
   const [openShow, setOpenShow] = useState(false)
   const [currunt, setCurrent] = useState<any>(null)
-  const [meeting, setMeeting] = useState<any>(null)
-
-  const { mutateAsync, isPending }: any = useChangeDocument()
 
   const handleClosed = async (row: any) => {
     setOpen(true)
     setCurrent(row)
-    // if (row) {
-    //   const data = await fetchShowCancelMeeting({ id: id, rowId: row?.id })
-    //   console.log(data, 'data')
-    // }
   }
 
   const handleShow = async (row: any) => {
@@ -64,17 +56,16 @@ export default function CancleMeetingTable({ id }: any) {
   return (
     <>
       <MeetingCancelledShowModal
-        id={id}
         title='نمایش جلسه'
-        description='می توانید جلسه مورد نظر را مشاهده کنید'
+        description='می توانید اطلاعات جلسه کنسل شده مورد نظر را مشاهده کنید'
         open={openShow}
         onClose={() => setOpenShow(false)}
         currunt={currunt}
       />
       <MeetingStatusModal
         id={id}
-        title='تعیین وضعیت جلسه'
-        description='می توانید جلسه لفو شده مورد نظر را تعیین تکلیف کنید'
+        title='تعیین وضعیت'
+        description='می توانید جلسه لفو شده مورد نظر را تعیین وضعیت کنید'
         open={open}
         onClose={() => setOpen(false)}
         currunt={currunt}

@@ -11,8 +11,6 @@ import { toast } from 'react-toastify'
 export default function ModalUpdateRefferrerType({ onClose, open , title, description , action , currentRow }: { currentRow: any, action: any, onClose: any, open: boolean , title: string , description : string }) {
 
 
-    console.log(currentRow, action, 'teseerere')
-
   const {setError , control, handleSubmit, setValue, clearErrors, reset } = useForm({
     defaultValues: {
         name: currentRow?.name

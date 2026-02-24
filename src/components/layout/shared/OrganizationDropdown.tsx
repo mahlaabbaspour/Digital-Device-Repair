@@ -25,6 +25,7 @@ import { Box, Divider, Typography } from '@mui/material'
 import { BiHomeAlt, BiHomeSmile, BiSolidBatteryCharging } from 'react-icons/bi'
 import { FcOrganization } from 'react-icons/fc'
 import { RiOrganizationChart } from 'react-icons/ri'
+import { updateInfoOrganizationAndInstitutionActive } from '@/libs/utils'
 
 const OrganizationDropdown = () => {
   const { data: session }: any = useSession()
@@ -48,6 +49,17 @@ const OrganizationDropdown = () => {
     setOpen(prevOpen => !prevOpen)
   }
 
+  const handleOrganizationActive = async (id: any) => {
+    try {
+      const data = {
+        organization_id: id
+      }
+      const res = await updateInfoOrganizationAndInstitutionActive(data)
+    } catch (error) {
+      throw error
+    }
+  }
+
   return (
     <>
       <Tooltip
@@ -58,7 +70,7 @@ const OrganizationDropdown = () => {
         slotProps={{ popper: { className: 'capitalize' } }}
       >
         <IconButton ref={anchorRef} onClick={handleToggle} className='text-textPrimary'>
-          <BiHomeAlt />
+          <i className='tabler-sitemap text-2xl' />
         </IconButton>
       </Tooltip>
       <Popper
@@ -106,7 +118,10 @@ const OrganizationDropdown = () => {
                     {session?.user?.organizations?.map((el: any) => (
                       <MenuItem
                         key={el?.id}
-                        onClick={() => router.push(`/organization/${el?.id}/cartable/dashboard`)}
+                        onClick={() => {
+                          router.push(`/organization/${el?.id}/cartable/dashboard`)
+                          handleOrganizationActive(el?.id)
+                        }}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',

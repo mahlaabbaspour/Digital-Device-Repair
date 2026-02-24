@@ -35,7 +35,6 @@ import { useUpdateMeetingAndDiagnosisInstitution } from '@/hooks/superUser/useIn
 import { GeTErrorFetch } from '@/components/elements/errorHandler'
 
 export default function UpdateMeetInstitution1480Form({ id, upsertData, meetingId, disabled, show }: any) {
-  console.log(upsertData, show, 'upsertData')
   const [userData, setUserData] = useState<any>(null)
   const fetchAdvisorInfo = async (userId: number) => {
     try {
@@ -257,7 +256,6 @@ export default function UpdateMeetInstitution1480Form({ id, upsertData, meetingI
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       const test1 = convertEditorContent(remarks)
       const test2 = convertEditorContent(note)
       const startTimeShamsi = values.start_time ? moment(values.start_time).format('HH:mm') : ''
@@ -284,7 +282,6 @@ export default function UpdateMeetInstitution1480Form({ id, upsertData, meetingI
         client_remarks: test1,
         note_advisor: test2
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(mutateAsync({ data: data, id: id, meetingId: meetingId }), {
         pending: 'درحال انجام ...'

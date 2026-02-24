@@ -34,8 +34,6 @@ export default function ModalUpdateTargetOrganization({
   title: string
   description: string
 }) {
-  console.log(currentRow, action, 'teseerere')
-
   const { setError, control, handleSubmit, setValue, clearErrors, reset } = useForm({
     defaultValues: {
       name: currentRow?.name

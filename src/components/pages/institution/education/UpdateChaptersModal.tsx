@@ -39,7 +39,6 @@ export default function UpdateChaptersModal({
       title: ''
     }
   })
-  console.log(rowSelect, 'rowSelect')
 
   useEffect(() => {
     if (rowSelect) {
@@ -51,7 +50,6 @@ export default function UpdateChaptersModal({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       await toast.promise(mutateAsync({ data: values, id, courseId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })

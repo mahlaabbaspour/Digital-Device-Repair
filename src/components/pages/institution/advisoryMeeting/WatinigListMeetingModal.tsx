@@ -57,7 +57,7 @@ export default function CreateWatingListMeeting({
   date: any
 }) {
   const [documentData, setDocumentData] = useState<any>(null)
-  console.log(documentData, 'dlsfjljdslfkjsldjfljd')
+
   const { control, handleSubmit, setError, clearErrors, reset } = useForm({
     defaultValues: {
       number: ''
@@ -79,14 +79,12 @@ export default function CreateWatingListMeeting({
   })
 
   async function onSubmit(values: any) {
-    console.log({ [searchBy]: values?.number })
     clearErrors()
     try {
       const response = await toast.promise(mutateAsync({ [searchBy]: values?.number }), {
         pending: 'در حال انجام...'
       })
       setDocumentData(response?.data?.data)
-      console.log(response?.data, 'res')
       if (response.status) {
         toast.success('عملیات با موفقیت انجام شد')
         reset()
@@ -119,7 +117,6 @@ export default function CreateWatingListMeeting({
 
   const handleRequest = async (data: any) => {
     try {
-      console.log(data, 'data')
       if (!data) {
         toast.error('ابتدا یک پرونده را انتخاب کرده')
         return

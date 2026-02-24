@@ -34,7 +34,6 @@ export default function Comment() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollableBoxRef = useRef<HTMLDivElement>(null)
   const [message, setMessage] = useState<any>()
-  console.log(message, 'message')
   const [newMessage, setNewMessage] = useState('')
   const [replyingTo, setReplyingTo] = useState<any | null>(null)
   const [editingMessage, setEditingMessage] = useState<any | null>(null)
@@ -51,8 +50,6 @@ export default function Comment() {
       }
 
       setMessage([data])
-
-      console.log(data, 'data')
     } catch (error) {
       throw error
     }
@@ -148,7 +145,6 @@ export default function Comment() {
             }}
           >
             {message?.map((message: any) => {
-              console.log(message, 'message')
               const parantMessage = getParentMessage(message)
 
               return (

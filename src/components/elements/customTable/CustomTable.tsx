@@ -60,6 +60,7 @@ function CustomTable({
   cacheTime = 5 * 60 * 1000,
   btnShow,
   textBtn,
+  isPending,
   routeNameCustom,
   checkboxEnabled,
   dataStruct,
@@ -95,7 +96,8 @@ function CustomTable({
   const [openModal, setOpenModal] = useState('')
   const [loading, setLoading] = useState(false)
   const [fiter, setFilter] = useState('')
-  const [datas, setDatas] = useState([])
+  const [datas, setDatas] = useState<any[]>([])
+  console.log(datas, 'datas')
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
@@ -110,6 +112,7 @@ function CustomTable({
       }
     })
   )
+  console.log(previousData, 'previousData')
 
   const { data, isLoading } = useQuery({
     queryKey: [queryKey, { baseUrl, pageIndex, pageSize, fiter, sortColumn, sortDirection, token }],
@@ -126,8 +129,9 @@ function CustomTable({
       }
     },
     staleTime: cacheTime,
-    enabled: true
+    enabled: Boolean(baseUrl) && (!previousData || previousData.length === 0)
   })
+  console.log(isLoading, 'isLoading')
 
   const deleteFeild = async (id: string) => {
     setLoading(true)
@@ -154,13 +158,19 @@ function CustomTable({
     }
   }
 
+  const tableData = previousData?.length ? previousData : (data?.data ?? [])
+
   useEffect(() => {
-    setDatas(data?.data ?? [])
-  }, [data])
+    if (previousData && previousData.length > 0) {
+      setDatas(previousData)
+      console.log('slmmmmmm')
+    } else {
+      setDatas(data?.data ?? [])
+      console.log('sdddddddddddddd')
+    }
+  }, [data, previousData])
 
-  console.log(datas, 'datas')
-
-  const totalDataCount = previousData ? previousData.length : (data?.meta?.total ?? 0)
+  const totalDataCount = previousData && previousData.length > 0 ? previousData.length : (data?.meta?.total ?? 0)
 
   function getNestedValue(obj: any, paths: any) {
     if (!Array.isArray(paths)) return []
@@ -455,7 +465,7 @@ function CustomTable({
               </TableRow>
             </TableHead>
 
-            {!token || isLoading ? (
+            {!token || isLoading || isPending ? (
               <TableBody>
                 {new Array(6).fill(0).map((_: any, i: any) => (
                   <TableRow key={i}>
@@ -626,7 +636,7 @@ function CustomTable({
               </div>
             </div>
           )}
-          count={datas.length}
+          count={tableData.length ?? 0}
           rowsPerPage={5}
           page={pageIndex}
           onPageChange={(_, page) => {

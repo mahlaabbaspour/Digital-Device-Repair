@@ -17,35 +17,40 @@ import {
   TableBody,
   Checkbox,
   Divider,
-  Skeleton
+  Skeleton,
+  Box
 } from '@mui/material'
 import { toast } from 'react-toastify'
 import { useState } from 'react'
-import {
-  useCreateDocumentInstitution,
-  useDeleteWatingListMeetingInstitution,
-  useWatingListMeetingInstitution
-} from '@/hooks/landing/useInstitutionLanding'
+import { useCreateDocumentConsultationUser, useCreateWatingListMeetingUser } from '@/hooks/user/useCalenderMeeting'
+import { useSession } from 'next-auth/react'
 
-export default function CreateWatingListMeetingInstitution({
+export default function CreateWatingListMeetingsConsultationModal({
   onClose,
   open,
   id,
+  institutionId,
   selectedRow,
   document,
+  params,
   datas
 }: {
   onClose: any
   open: boolean
   id: string
+  institutionId: string
   selectedRow: any
   document: any
   datas: any
+  params: any
 }) {
-  const [selectedId, setSelectedId] = useState(null)
+  const session: any = useSession()
+  const userAuthId = session?.data?.user?.user?.username
+  const userId = selectedRow?.consultationDocument?.username
+  const HasUserAuth = Boolean(userAuthId == userId)
 
   //request wating meeting
-  const { mutateAsync: watingCreate, isPending: isLoading }: any = useWatingListMeetingInstitution()
+  const { mutateAsync: watingCreate, isPending: isLoading }: any = useCreateWatingListMeetingUser()
   const handleRequest = async (data: any) => {
     try {
       if (!data) {
@@ -54,57 +59,29 @@ export default function CreateWatingListMeetingInstitution({
       }
 
       const dataReserve = {
-        consultation_document_id: selectedId
+        consultation_document_id: data
       }
 
-      const res: any = await toast.promise(watingCreate({ data: dataReserve, id: id, rowId: selectedRow?.id }), {
-        pending: 'در حال انجام...'
-      })
-      console.log(res, 'res')
-
-      if (res?.status) {
-        toast.success('با موفقیت انجام شد')
-        onClose()
-        setSelectedId(null)
-      } else {
-        toast?.error(res?.message)
-        onClose()
-        setSelectedId(null)
-      }
-    } catch (error) {
-      throw error
-    }
-  }
-
-  ///////Destroy WatingList meeting
-  const { mutateAsync: watingDelete, isPending: isLoadingDelete }: any = useDeleteWatingListMeetingInstitution()
-  const handleRequestDelete = async () => {
-    try {
       const res: any = await toast.promise(
-        watingDelete({ id: id, meetingId: selectedRow?.id, rowId: datas?.data?.meetingWaitingListId }),
+        watingCreate({ data: dataReserve, id: id, rowId: selectedRow?.id, params }),
         {
           pending: 'در حال انجام...'
         }
       )
-      console.log(res, 'res')
-
-      if (res?.status) {
-        toast.success('عملیات با موفقیت انجام شد')
-        onClose()
-      }
+      onClose()
     } catch (error) {
       throw error
     }
   }
 
   ///document
-  const { mutateAsync: createDocument, isPending: isLoadingDocument }: any = useCreateDocumentInstitution()
+  const { mutateAsync: createDocument, isPending: isLoadingDocument }: any = useCreateDocumentConsultationUser()
   const handleRequestDocument = async () => {
     try {
       const res: any = await toast.promise(createDocument({ id }), {
         pending: 'در حال انجام...'
       })
-      console.log(res, 'res')
+      onClose()
 
       if (res?.status) {
         toast.success(res?.data[0])
@@ -129,74 +106,90 @@ export default function CreateWatingListMeetingInstitution({
               </Typography>
             }
             subheader={
-              <Typography variant='body1'>
-                تعداد افراد حاضر در صف انتظار{' '}
-                {!datas?.status ? datas?.message?.waitingCount : datas?.data?.waitingCount} نفر می باشد{' '}
-              </Typography>
+              <Typography variant='body1'>می توانید با انتخاب پرونده مورد نظر در صف انتظار ثبت کنید</Typography>
             }
           />
-          <Divider />
+
+          <Box sx={{ borderRadius: 5, backgroundColor: '#fcecd7ef', display: 'flex', minHeight: 20, p: 5 }}>
+            <Icon icon='mdi:alert-circle-outline' width={25} color='#f3a640' />
+            <Typography color='#f3a640' sx={{ ml: 2, mt: 1 }}>
+              تعداد افراد حاضر در صف انتظار {!datas?.status ? datas?.message?.waitingCount : datas?.data?.waitingCount}{' '}
+              نفر می باشد{' '}
+            </Typography>
+          </Box>
+
           <CardContent>
-            {document ? (
-              <Grid container spacing={6} mt={6}>
-                <Grid item xs={12}>
-                  <Table
-                    sx={{
-                      minWidth: 650,
-                      overflow: 'hidden'
-                    }}
-                  >
-                    <TableHead
+            {!HasUserAuth &&
+              (document ? (
+                <Grid container spacing={6}>
+                  <Grid item xs={12}>
+                    <Table
                       sx={{
-                        '& .MuiTableCell-head': {
-                          fontWeight: 500,
-                          fontSize: '15px'
-                        }
+                        minWidth: 650,
+                        overflow: 'hidden'
                       }}
                     >
-                      <TableRow>
-                        <TableCell align='center'>شماره پرونده</TableCell>
-                        <TableCell align='center'>کدملی</TableCell>
-                        <TableCell align='center'>نام و نام خانوادگی </TableCell>
-                        <TableCell align='center'>موبایل</TableCell>
-                        <TableCell align='center'>انتخاب</TableCell>
-                      </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                      {document?.length === 0 ? (
+                      <TableHead
+                        sx={{
+                          '& .MuiTableCell-head': {
+                            fontWeight: 500,
+                            fontSize: '15px'
+                          }
+                        }}
+                      >
                         <TableRow>
-                          <TableCell colSpan={5} align='center'>
-                            <Typography variant='body1' color='text.secondary'>
-                              هیچ دیتایی موجود نمی‌باشد
-                            </Typography>
-                          </TableCell>
+                          <TableCell align='center'>شماره پرونده</TableCell>
+                          <TableCell align='center'>کدملی</TableCell>
+                          <TableCell align='center'>نام و نام خانوادگی </TableCell>
+                          <TableCell align='center'>موبایل</TableCell>
+                          <TableCell align='center'>عملیات</TableCell>
                         </TableRow>
-                      ) : (
-                        document.map((item: any) => (
-                          <TableRow key={item?.id} hover>
-                            <TableCell align='center'>{item?.document_number}</TableCell>
-                            <TableCell align='center'>{item?.username}</TableCell>
-                            <TableCell align='center'>{`${item?.first_name} ${item?.last_name}`}</TableCell>
-                            <TableCell align='center'>{item?.mobile}</TableCell>
-                            <TableCell align='center'>
-                              <Checkbox checked={selectedId === item.id} onChange={() => setSelectedId(item?.id)} />
+                      </TableHead>
+
+                      <TableBody>
+                        {document?.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={5} align='center'>
+                              <Typography variant='body1' color='text.secondary'>
+                                هیچ دیتایی موجود نمی‌باشد
+                              </Typography>
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
+                        ) : (
+                          document.map((item: any) => (
+                            <TableRow key={item?.id} hover>
+                              <TableCell align='center'>{item?.document_number}</TableCell>
+                              <TableCell align='center'>{item?.username}</TableCell>
+                              <TableCell align='center'>{`${item?.first_name} ${item?.last_name}`}</TableCell>
+                              <TableCell align='center'>{item?.mobile}</TableCell>
+                              <TableCell align='center'>
+                                {/* <Checkbox checked={selectedId === item.id} onChange={() => setSelectedId(item?.id)} /> */}
+
+                                <Button
+                                  variant='outlined'
+                                  sx={{ fontFamily: 'inherit' }}
+                                  color='primary'
+                                  onClick={() => handleRequest(item?.id)}
+                                  disabled={isLoading}
+                                >
+                                  ثبت در صف انتظار
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </Grid>
                 </Grid>
-              </Grid>
-            ) : (
-              <Skeleton variant='rounded' height={150} sx={{ mb: 5, mt: 10 }} />
-            )}
+              ) : (
+                <Skeleton variant='rounded' height={150} sx={{ mb: 5, mt: 10 }} />
+              ))}
           </CardContent>
         </DialogContent>
         <DialogActions>
           <Button variant='outlined' sx={{ fontFamily: 'inherit' }} color='error' onClick={onClose}>
-            انصراف
+            بستن
           </Button>
 
           {document?.length === 0 && (
@@ -212,7 +205,7 @@ export default function CreateWatingListMeetingInstitution({
             </Button>
           )}
 
-          {!datas?.status && (
+          {/* {!HasUserAuth && (
             <Button
               variant='contained'
               sx={{ fontFamily: 'inherit' }}
@@ -222,9 +215,9 @@ export default function CreateWatingListMeetingInstitution({
             >
               ثبت در صف انتظار
             </Button>
-          )}
+          )} */}
 
-          {datas?.status && (
+          {/* {HasUserAuth && (
             <Button
               variant='contained'
               sx={{ fontFamily: 'inherit' }}
@@ -234,7 +227,7 @@ export default function CreateWatingListMeetingInstitution({
             >
               حذف از صف انتظار
             </Button>
-          )}
+          )} */}
         </DialogActions>
       </Dialog>
     </>

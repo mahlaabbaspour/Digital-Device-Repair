@@ -45,7 +45,7 @@ export default function ModalCreateFieldActivity({
       const res = await toast.promise(mutateAsync({ data: values, id: id }), {
         pending: 'در حال انجام ...'
       })
-      console.log(res, 'res')
+
       await onClose()
       reset()
     } catch (error) {

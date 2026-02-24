@@ -35,7 +35,6 @@ import { GeTErrorFetch } from '@/components/elements/errorHandler'
 import { toast } from 'react-toastify'
 
 export default function DiagnosisTable({ id, documentId, show }: any) {
-  console.log(show, 'show')
   const initialIconSelected = show?.consultation_meetings?.find((item: any) => item.isSelected)?.id ?? null
 
   const [selectedRadio, setSelectedRadio] = useState<number | null>(initialIconSelected ?? null)
@@ -218,7 +217,6 @@ export default function DiagnosisTable({ id, documentId, show }: any) {
       const res = await toast.promise(updateDocument({ data: data, id: id, documentId: documentId }), {
         pending: 'در حال انجام...'
       })
-      console.log(res, 'res')
     } catch (error) {
       GeTErrorFetch({ error, setError })
     }

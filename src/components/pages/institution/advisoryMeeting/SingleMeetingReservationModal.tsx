@@ -70,14 +70,12 @@ export default function CreateReservationMeetingSingle({
   })
 
   async function onSubmit(values: any) {
-    console.log({ [searchBy]: values?.number })
     clearErrors()
     try {
       const response = await toast.promise(mutateAsync({ [searchBy]: values?.number }), {
         pending: 'در حال انجام...'
       })
       setDocumentData(response.data?.data)
-      console.log(response?.data, 'res')
       if (response.data.data) {
         toast.success('عملیات با موفقیت انجام شد')
       } else {
@@ -90,7 +88,6 @@ export default function CreateReservationMeetingSingle({
 
   const [selectedId, setSelectedId] = useState(null)
   const [searchBy, setSearchBy] = useState('')
-  console.log(searchBy, 'sejklj')
   const [isLoad, setIsLoad] = useState(true)
 
   const handleSelect = (data: any) => {
@@ -101,7 +98,6 @@ export default function CreateReservationMeetingSingle({
 
   const handleRequest = async (data: any) => {
     try {
-      console.log(data, 'data')
       // if (!data) {
       //   toast.error('ابتدا یک پرونده را انتخاب کرده')
       //   return
@@ -111,12 +107,10 @@ export default function CreateReservationMeetingSingle({
         document_id: data?.document?.id,
         meeting_ids: [selectedRow?.id]
       }
-      console.log(dataReserve, 'reserve')
 
       const res: any = await toast.promise(reserve({ data: dataReserve, id: id, date: date }), {
         pending: 'در حال انجام...'
       })
-      console.log(res, 'res')
 
       if (res?.status) {
         toast.success('با موفقیت انجام شد')

@@ -39,7 +39,6 @@ export default function UpdateHistoryStudyModal({
   rowSelect: any
   disabled: boolean
 }) {
-  console.log(disabled, 'disableeeeeeeeeee')
   const { settings } = useSettings()
   const { control, handleSubmit, setError, clearErrors, setValue, reset } = useForm({
     defaultValues: {

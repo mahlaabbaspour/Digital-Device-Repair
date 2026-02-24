@@ -2,7 +2,6 @@ import axiosConfig from '../auth/axios'
 
 export const createCommentUser = async function (fromData: any) {
   try {
-    console.log(fromData, 'fromData')
     const formData = new FormData()
 
     Object.keys(fromData?.data).forEach(key => {
@@ -33,7 +32,6 @@ export const createCommentUser = async function (fromData: any) {
 
 export const updateCommentUser = async function (fromData: any) {
   try {
-    console.log(fromData, 'fromData')
     const formData = new FormData()
 
     Object.keys(fromData?.data).forEach(key => {

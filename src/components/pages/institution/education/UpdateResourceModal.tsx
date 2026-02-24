@@ -65,7 +65,6 @@ export default function UpdateResourceModal({
 
   type Mode = 'show' | 'update'
   const mode = disabled ? 'show' : 'update'
-  console.log(mode, 'mode')
 
   useEffect(() => {
     if (selectedResource) {
@@ -79,8 +78,6 @@ export default function UpdateResourceModal({
       setPreviewUrl(selectedResource.file.address)
     }
   }, [selectedResource])
-
-  console.log(selectedResource, 'selectedResource')
 
   const [file, setFile] = useState<File | null>(null)
   const [dataFiles, setDataFiles] = useState(null)
@@ -98,7 +95,6 @@ export default function UpdateResourceModal({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       await toast.promise(
         mutateAsync({ data: values, id, courseId, chapterId: chapterId, rowId: selectedResource?.id }),
         {
@@ -185,14 +181,14 @@ export default function UpdateResourceModal({
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={12}>
+                {/* <Grid item xs={12} sm={12}>
                   <MultiFileViewer
                     files={files}
                     setFiles={setFiles}
                     dataFiles={selectedResource?.files}
                     disabled={disabled}
                   />
-                </Grid>
+                </Grid> */}
 
                 <Grid item xs={12}>
                   <Controller

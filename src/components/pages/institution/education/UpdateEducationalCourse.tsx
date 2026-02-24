@@ -20,9 +20,10 @@ import {
   IconButton,
   Tooltip,
   Menu,
-  MenuItem
+  MenuItem,
+  Stack
 } from '@mui/material'
-import { BiLogoTripAdvisor, BiShowAlt, BiSolidInfoSquare, BiTestTube } from 'react-icons/bi'
+import { BiLogoTripAdvisor, BiShowAlt, BiSolidInfoSquare } from 'react-icons/bi'
 import { IoArrowBack, IoArrowForward, IoOptions, IoTrashOutline } from 'react-icons/io5'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -37,12 +38,14 @@ import {
   useDeleteChapterCourseInstitution,
   useDeleteCourseStudentInstitution,
   useDeleteExamCourseInstitution,
+  useDeleteFileCourseStudentInstitution,
   useDeleteInPersonMeetingCourseInstitution,
   useDeleteOnlineMeetingCourseInstitution,
   useDeleteResourceCourseInstitution,
   useFetchChapterCourseInstitution,
   useFetchCourseStudentInstitution,
   useFetchExamCourseInstitution,
+  useFetchFileCourseStudentInstitution,
   useFetchInPersonMeetingCourseInstitution,
   useFetchOnlineMeetingCourseInstitution,
   useUpdateLessonEducationInstitution
@@ -70,9 +73,10 @@ import { ContentState, convertFromHTML, EditorState } from 'draft-js'
 import { parse } from 'date-fns-jalali'
 import CreateExamModal from './CreateExamCourseModal'
 import UpdateExamModal from './UpdateExamCourseModal'
-import { FaQuestionCircle } from 'react-icons/fa'
 import CreateCourseStudentModal from './CreateCourseStudentModal'
 import UpdateCourseStudentModal from './UpdateCourseStudentModal'
+import CreateFileCourseModal from './CreateFileCourseModal'
+import { DeleteOutline, DownloadOutlined } from '@mui/icons-material'
 
 // Accordion Component
 const Accordion = styled(MuiAccordion)<AccordionProps>(({ theme }) => ({
@@ -286,7 +290,6 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
     courseId: courseId
   })
   const { mutateAsync: deleteChapter, isPending: loadDeleteChapter }: any = useDeleteChapterCourseInstitution()
-  console.log(dataChapters, 'datttttttttttttttttttttttttttttt')
 
   const [selectedResource, setSelectedResource] = useState(null)
   const [resourceOpen, setResourceOpen] = useState(false)
@@ -333,7 +336,14 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
     id: id,
     courseId: courseId
   })
-  console.log(dataCourseStudent, 'data course student')
+
+  const [fileOpen, setFileOpen] = useState(false)
+  const [fileDeleteOpen, setFileDeleteOpen] = useState(false)
+  const { mutateAsync: deleteFile, isPending: loadDeleteFile }: any = useDeleteFileCourseStudentInstitution()
+  const { data: dataFile, isPending: isLoadingFile }: any = useFetchFileCourseStudentInstitution({
+    id: id,
+    courseId: courseId
+  })
 
   return (
     <>
@@ -479,10 +489,8 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
       <CreateCourseStudentModal
         open={courseStudentOpen}
         onClose={() => setCourseStudentOpen(false)}
-        rowSelect={rowSelect}
         id={id}
         courseId={courseId}
-        upsertData={upsertData}
       />
       <UpdateCourseStudentModal
         open={courseStudentUpdateOpen}
@@ -500,6 +508,25 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
         onClose={() => setCourseStudentDeleteOpen(prev => !prev)}
         deleteFun={deleteCourseStudent}
         isLoading={loadDeleteCourseStudent}
+        rowSelect={rowSelect}
+        id={id}
+        courseId={courseId}
+      />
+      <CreateFileCourseModal
+        open={fileOpen}
+        onClose={() => setFileOpen(false)}
+        rowSelect={rowSelect}
+        id={id}
+        courseId={courseId}
+        chapterId={selectedId}
+      />
+      <DialogAlertCourse
+        description='آیا از حذف این فایل اطمینان دارید ؟'
+        title='حذف فایل'
+        open={fileDeleteOpen}
+        onClose={() => setFileDeleteOpen(prev => !prev)}
+        deleteFun={deleteFile}
+        isLoading={loadDeleteFile}
         rowSelect={rowSelect}
         id={id}
         courseId={courseId}
@@ -683,7 +710,7 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
                           onAddValue={newValue => onChange(newValue)}
                           value={value}
                           multiple={true}
-                          getOptionLabel={optien => optien?.name}
+                          getOptionLabel={optien => `${optien?.first_name} ${optien?.last_name} (${optien?.username})`}
                           label='مدرسان'
                           error={!!error}
                           helperText={error?.message}
@@ -1127,6 +1154,74 @@ export default function UpdateEducationalCourse({ id, courseId, upsertData, show
                     </Accordion>
                   </Box>
                 ))
+              )}
+            </CardContent>
+          </Card>
+
+          <Card sx={{ mt: 5 }}>
+            <CardHeader
+              title={<Typography variant='h6'>فایل ها</Typography>}
+              subheader={<Typography variant='caption'>می توانید فایل های دوره را مشاهده نمایید</Typography>}
+            />
+            <CardContent>
+              <Button onClick={() => setFileOpen(true)} variant='contained' sx={{ mt: 5, mb: 3 }}>
+                افزدون فایل
+              </Button>
+
+              {isLoadingFile ? (
+                <Box>
+                  <Typography>lsjdfljsdlfj</Typography>
+                </Box>
+              ) : (
+                <Stack spacing={1} width='100%'>
+                  {dataFile.map((file: any) => (
+                    <Box
+                      key={file.id}
+                      sx={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        bgcolor: '#f5f5f5',
+                        borderRadius: 2,
+                        px: 2,
+                        py: 1,
+                        minHeight: 48
+                      }}
+                    >
+                      {/* File Name */}
+                      <Typography
+                        variant='body2'
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          maxWidth: '70%'
+                        }}
+                      >
+                        {file.name}
+                      </Typography>
+
+                      {/* Actions */}
+                      <Stack direction='row' spacing={0.5}>
+                        <IconButton size='small' color='info'>
+                          <DownloadOutlined fontSize='small' />
+                        </IconButton>
+
+                        <IconButton
+                          size='small'
+                          color='error'
+                          onClick={() => {
+                            setFileDeleteOpen(true)
+                            setRowSelect(file)
+                          }}
+                        >
+                          <DeleteOutline fontSize='small' />
+                        </IconButton>
+                      </Stack>
+                    </Box>
+                  ))}
+                </Stack>
               )}
             </CardContent>
           </Card>

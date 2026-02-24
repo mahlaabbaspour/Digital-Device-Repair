@@ -48,7 +48,6 @@ export default function TableEducationalCourse({ id }: any) {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [row, setRow] = useState(null)
-  console.log(row, 'row')
 
   const openModal = (row: any) => {
     setRow(row)

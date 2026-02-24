@@ -51,7 +51,7 @@ export default function RequestListTable({ id }: any) {
           status: () => true,
           delete: () => true,
           edit: () => false,
-          show: () => false
+          show: () => true
         }}
       />
     </>

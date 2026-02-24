@@ -23,7 +23,6 @@ export default function ModalCreateEducation({ onClose, open , title, descriptio
          const res =  await toast.promise(mutateAsync(values) , {
             pending: 'در حال انجام ...'
          })
-         console.log(res, 'res')
          await onClose()
          reset()
 

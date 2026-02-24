@@ -45,11 +45,9 @@ export default function CommentUser({ documentId, id, advisorId }: any) {
   const scrollableBoxRef = useRef<HTMLDivElement>(null)
   const [message, setMessage] = useState<any>([])
   const [newMessage, setNewMessage] = useState('')
-  console.log(newMessage, 'NEW MESSAGE')
   const [replyingTo, setReplyingTo] = useState<any | null>(null)
   const [editingMessage, setEditingMessage] = useState<any | null>(null)
   const [selectMessgeId, setSelectMessageId] = useState(null)
-  console.log(editingMessage, 'editeingMessge')
   const session: any = useSession()
   const sessionUserId = session?.data?.user?.user?.id
 
@@ -80,7 +78,6 @@ export default function CommentUser({ documentId, id, advisorId }: any) {
         body: newMessage,
         parent_id: null
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(
         mutateAsync({ data: data, id: id, rowId: documentId, advisorId: advisorId }),

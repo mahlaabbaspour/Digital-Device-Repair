@@ -35,7 +35,6 @@ export default function SupervisorApprovalModal({
   id: string
   selectedRow: any
 }) {
-  console.log(selectedRow, 'selectedRow')
   const { control, handleSubmit, setError, clearErrors, setValue, watch, reset } = useForm({
     defaultValues: {
       supervisor_description: '',
@@ -54,7 +53,6 @@ export default function SupervisorApprovalModal({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       await toast.promise(mutateAsync({ data: values, id: id, rowId: selectedRow?.id }), {
         pending: ' در حال انجام ...'
       })

@@ -31,7 +31,7 @@ export default function CustomAsyncAutocomplete({
 }: Props) {
   const [open, setOpen] = useState(false)
   const [options, setOptions] = useState<any[]>([])
-  console.log(options, 'options')
+
   const [loading, setLoading] = useState(false)
 
   const [inputValue, setInputValue] = useState('')
@@ -39,7 +39,6 @@ export default function CustomAsyncAutocomplete({
   const fetchData = useCallback(async () => {
     setLoading(true)
     const data = await fetchOptionsSelect(url, inputValue)
-    console.log(data, 'data')
     setOptions(data)
     setLoading(false)
   }, [url, inputValue])
@@ -50,6 +49,11 @@ export default function CustomAsyncAutocomplete({
     const timer = setTimeout(fetchData, 500)
     return () => clearTimeout(timer)
   }, [open, inputValue, disabled, readOnly, fetchData])
+
+  const defaultGetOptionLabel = (option: any) =>
+    typeof option === 'string'
+      ? option
+      : (option?.name ?? option?.title ?? (option?.first_name ? `${option.first_name} ${option.last_name ?? ''}` : ''))
 
   return (
     <Autocomplete
@@ -74,13 +78,7 @@ export default function CustomAsyncAutocomplete({
       loadingText='در حال جستجو'
       noOptionsText='موردی یافت نشد'
       isOptionEqualToValue={(option, value) => option.id === value.id}
-      getOptionLabel={option =>
-        typeof option === 'string'
-          ? option
-          : (option?.name ??
-            option?.title ??
-            (option?.first_name ? `${option.first_name} ${option.last_name ?? ''} (${option.mobile ?? ''})` : ''))
-      }
+      getOptionLabel={autocompleteProps.getOptionLabel ?? defaultGetOptionLabel}
       renderInput={params => (
         <TextField
           {...params}

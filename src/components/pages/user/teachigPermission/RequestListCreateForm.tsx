@@ -85,7 +85,6 @@ const StepperHeaderContainer = styled(CardContent)<CardContentProps>(({ theme })
 }))
 
 export default function RequestCreateForm({ upsertData, id }: any) {
-  console.log(upsertData, 'upeeeee')
   const { settings } = useSettings()
   const [activeStep, setActiveStep] = useState<number>(0)
   const { control, handleSubmit, setError, watch, formState } = useForm({
@@ -129,7 +128,6 @@ export default function RequestCreateForm({ upsertData, id }: any) {
           result[key] = value
         }
       })
-      console.log(result, 'dattttttt')
 
       const res: any = await toast.promise(mutateAsync({ data: result, id: id }), {
         pending: 'در حال انجام...'
@@ -155,7 +153,7 @@ export default function RequestCreateForm({ upsertData, id }: any) {
       )
       setActivity(res?.data?.data)
     } catch (error) {
-      console.log(error)
+      throw error
     }
   }
 
@@ -591,7 +589,6 @@ export default function RequestCreateForm({ upsertData, id }: any) {
                           id={`file-input`}
                           onChange={(e: any) => {
                             const files = Array.from(e.target.files)
-                            console.log(e.target.files, 'flies')
 
                             onChange(files[0] ? files[0] : null)
                           }}

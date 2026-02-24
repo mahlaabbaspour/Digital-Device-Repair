@@ -3,78 +3,116 @@
 import { useState } from 'react'
 import {
   Box,
-  Card,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
   Typography,
-  CardHeader,
   Divider,
   Button,
   Grid,
   Autocomplete,
   TextField,
   CardContent,
-  Pagination,
-  Select,
-  FormControl,
-  MenuItem,
-  Skeleton
+  IconButton,
+  Tooltip,
+  Card
 } from '@mui/material'
-import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import CustomAsyncAutocomplete from '@/components/elements/CustomAsyncAutocomplete'
-import { ArrowDropDownIcon } from '@mui/x-date-pickers'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import { useFetchDocumentList } from '@/hooks/institution/consultationDocuments/useDocumentList'
 import { dateConverter } from '@/helpers/DateHelpers'
 import CustomDatePicker from '@/components/elements/customDatePicker'
+import CustomTable from '@/components/elements/customTable/CustomTable'
+import CustomChip from '@/@core/components/mui/chip/index'
+import { BiCalendarCheck, BiCreditCard, BiEdit, BiListUl, BiShowAlt, BiTrash, BiXCircle } from 'react-icons/bi'
+import {
+  useCancelMeetingConsultation,
+  useDeleteSingleMeetingConsultation,
+  useFetchMeetingConsultation
+} from '@/hooks/institution/advisoryMeeting/useMeetingConsultation'
+import ModalSingleMeeting from '../meetingConsultation/SingleMeetingModalConsultation'
+import ModalGroupMeeting from '../meetingConsultation/GroupMeetingModalConsultation'
+import CreateReservationMeetingSingle from '../meetingConsultation/SingleMeetingReservationModalConsultation'
+import CreateReservationMeetingGroup from '../meetingConsultation/GroupMeetingReservationModalConsultation'
+import CreateWatingListMeeting from '../meetingConsultation/WatinigListMeetingModalConsultation'
+import DialogAlertMeeting from '../meetingConsultation/DialogAlertMeeting'
+import ModalPaymentMeeting from '../meetingConsultation/MeetingPaymentModalConsultation'
+import TableMeetingsConsultation from '../meetingConsultation/MeetingTable'
 
-const TableConsultationMeeting = ({
-  columns,
-  rows,
-  actions,
-  title,
-  description,
-  selectRow,
-  id,
-  documentId,
-  upsertData
-}: any) => {
-  console.log(id, upsertData, 'id')
-  console.log(columns, 'coulumns')
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+const dataStruct = {
+  title: ['تاریخ / زمان', 'پرونده', 'هزینه / وضعیت پرداخت', 'وضعیت جلسه'],
+  name: [
+    ['date', 'start_time', 'end_time'],
+    [
+      'consultationDocument.document_number',
+      'consultationDocument.first_name',
+      'consultationDocument.last_name',
+      'consultationDocument.username'
+    ],
+    ['price', 'payment_status'],
+    ['consultationStatus']
+  ],
+  align: ['', 'center', 'center', 'center'],
+  filter: [true, true, true, true, true],
+  sort: ['document_number', 'last_name', 'username', 'status'],
+  rowId: ['id'],
+  customCol: [
+    ([e, c, v]: any) => {
+      return (
+        <>
+          <Typography>{e}</Typography>
+          <Typography>{`${c} تا  ${v}`}</Typography>
+        </>
+      )
+    },
+    ([e, c, v, d]: any) => {
+      return (
+        <>
+          <Typography>{e ?? ''}</Typography>
+          <Typography>{c ? `${d} - ${c} ${v}` : ''}</Typography>
+        </>
+      )
+    },
+    ([e, c]: any) => {
+      return (
+        <>
+          <Typography>{`${e ? Number(e).toLocaleString('fa-IR') : ''} ریال`}</Typography>
+          <CustomChip
+            label={c == '0' ? 'پرداخت نشده' : 'پرداخت شده'}
+            color={c == '0' ? 'error' : 'success'}
+            skin='light'
+            variant='outlined'
+          />
+        </>
+      )
+    },
+    ([e]: any) => {
+      return (
+        <CustomChip
+          label={e?.name}
+          color={
+            e?.id === 1
+              ? 'info'
+              : e?.id === 2
+                ? 'warning'
+                : e?.id === 3
+                  ? 'success'
+                  : e?.id === 4
+                    ? 'error'
+                    : e?.id === 5
+                      ? 'default'
+                      : 'primary'
+          }
+          skin='light'
+          variant='outlined'
+        />
+      )
+    }
+  ]
+}
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage)
-  }
-
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(+event.target.value)
-    setPage(0)
-  }
-
-  const paginatedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-  console.log(paginatedRows, 'paginatedRows')
-  const [fiter, setFilter] = useState('')
-
-  const [pageIndex, setPageIndex] = useState(0)
-  const [pageSize, setPageSize] = useState(10)
-
-  const router = useRouter()
-
-  const getValueByPath = (obj: any, path: string) => {
-    return path.split('.').reduce((acc, key) => acc?.[key], obj)
-  }
-
+const TableConsultationMeeting = ({ id, upsertData, date = null }: any) => {
   const {
     control: controlFilter,
     handleSubmit: handleSubmitFilter,
@@ -86,7 +124,7 @@ const TableConsultationMeeting = ({
       consultation_status_ids: [],
       advisor_ids: [],
       activity_field_area_ids: [],
-      document_id: null,
+      consultation_document_id: null,
       username: '',
       mobile: '',
       full_name: ''
@@ -95,8 +133,8 @@ const TableConsultationMeeting = ({
 
   const [filters, setFilters] = useState<any>({})
   const [open, setOpen] = useState(false)
-  const { data: documents, isLoading }: any = useFetchDocumentList({ id: id, params: filters })
-  console.log(documents, 'documents')
+  const { data: meetings, isLoading }: any = useFetchMeetingConsultation({ id: id })
+  console.log(meetings, isLoading, 'meetingsmeetingsmeetingsmeetingsmeetings')
 
   async function onSubmitFilter(values: any) {
     try {
@@ -108,19 +146,116 @@ const TableConsultationMeeting = ({
         consultation_status_ids: values?.consultation_status_ids.map((el: any) => el?.id),
         advisor_ids: values?.advisor_ids?.map((el: any) => el?.id),
         activity_field_area_ids: values?.activity_field_area_ids?.map((el: any) => el?.id),
-        document_id: values?.document_id?.id,
+        consultation_document_id: values?.consultation_document_id?.id,
         username: values?.username,
         mobile: values?.mobile,
         full_name: values?.full_name
       }
+      console.log(data, 'data')
       setFilters(data)
     } catch (error) {
       throw error
     }
   }
 
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalUpdateOpen, setModalUpdateOpen] = useState(false)
+  const [modalReservationOpen, setModalReservationOpen] = useState(false)
+  const [modalReservationGroupOpen, setModalReservationGroupOpen] = useState(false)
+  const [modalWaitingListOpen, setModalWatingListOpen] = useState(false)
+  const [modalPaymentOpen, setModalPaymentOpen] = useState(false)
+  const [cancelOpen, setCancelOpen] = useState(false)
+  const [selectedRow, setSelectedRow] = useState(null)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [modalGroupOpen, setModalGroupOpen] = useState(false)
+  const openEditModal = () => {
+    setModalOpen(true)
+  }
+
+  const { mutateAsync: deleteFun, isPending }: any = useDeleteSingleMeetingConsultation()
+  const { mutateAsync: cancelFun, isPendingCancel }: any = useCancelMeetingConsultation()
+
+  const openPaymentModal = (row: any) => {
+    setModalPaymentOpen(true)
+    setSelectedRow(row)
+  }
+
   return (
     <>
+      <ModalPaymentMeeting
+        id={id}
+        title='پرداخت / تخصیص یاری برگ'
+        description='می توانید جلسه مورد نظر را پرداخت کنید و یارانه مورد نظر را می توانید تخصیص دهید و جلسه مورد نظر را قطعی کنید'
+        open={modalPaymentOpen}
+        onClose={() => setModalPaymentOpen(false)}
+        selectedRow={selectedRow}
+      />
+      <DialogAlertMeeting
+        id={id}
+        title='حذف جلسه تکی'
+        description='می توانید جلسه تکی مورد نظر را حذف کنید'
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        deleteFun={deleteFun}
+        isLoading={isPending}
+        selectedRow={selectedRow}
+        params={filters}
+      />
+      <DialogAlertMeeting
+        id={id}
+        title='کنسل کردن جلسه'
+        description='می توانید جلسه مورد نظر را کنسل کنید'
+        open={cancelOpen}
+        onClose={() => setCancelOpen(false)}
+        deleteFun={cancelFun}
+        isLoading={isPendingCancel}
+        selectedRow={selectedRow}
+        params={filters}
+      />
+      <CreateWatingListMeeting
+        id={id}
+        title='درخواست نوبت در صف انتظار'
+        description='می توانید نوبت خود را در صف انتظار ایجاد کنید'
+        open={modalWaitingListOpen}
+        onClose={() => setModalWatingListOpen(false)}
+        params={filters}
+        selectedRow={selectedRow}
+      />
+      <CreateReservationMeetingGroup
+        id={id}
+        title='درخواست نوبت گروهی'
+        description='می توانید درخواست نوبت به صورت  گروهی را ایجاد کنید'
+        open={modalReservationGroupOpen}
+        onClose={() => setModalReservationGroupOpen(false)}
+        upsertData={upsertData}
+        params={filters}
+      />
+      <CreateReservationMeetingSingle
+        id={id}
+        title='درخواست نوبت'
+        description=' می توانید با وارد شماره پرونده یا کد ملی پرونده مورد نظر را انتخاب کنید'
+        open={modalReservationOpen}
+        onClose={() => setModalReservationOpen(false)}
+        selectedRow={selectedRow}
+        date={date}
+        params={filters}
+      />
+      <ModalGroupMeeting
+        title='ایجاد جلسه گروهی'
+        description='می توانید جلسات را به صورت گروهی انتخاب کنید'
+        open={modalGroupOpen}
+        onClose={() => setModalGroupOpen(false)}
+        id={id}
+        params={filters}
+      />
+      <ModalSingleMeeting
+        id={id}
+        title='ایجاد جلسه'
+        description='می توانید جلسه را به صورت تکی ایجاد کنید'
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        params={filters}
+      />
       <Accordion expanded={open} onChange={() => setOpen(prev => !prev)} elevation={0}>
         <AccordionSummary
           expandIcon={open ? <ExpandLessIcon sx={{ fontSize: 30 }} /> : <ExpandMoreIcon sx={{ fontSize: 30 }} />}
@@ -210,7 +345,7 @@ const TableConsultationMeeting = ({
                           readOnly={false}
                           onAddValue={newValue => onChange(newValue)}
                           value={value}
-                          getOptionLabel={optien => optien?.name}
+                          getOptionLabel={optien => `${optien?.first_name} ${optien?.last_name} (${optien?.username})`}
                           label='مشاوران'
                           multiple={true}
                           error={!!error}
@@ -248,7 +383,7 @@ const TableConsultationMeeting = ({
                   {/* document_id */}
                   <Grid item xs={12} md={3}>
                     <Controller
-                      name='document_id'
+                      name='consultation_document_id'
                       control={controlFilter}
                       render={({ field: { onChange, value }, fieldState: { error } }) => (
                         <CustomAsyncAutocomplete
@@ -256,7 +391,9 @@ const TableConsultationMeeting = ({
                           readOnly={false}
                           onAddValue={newValue => onChange(newValue)}
                           value={value}
-                          getOptionLabel={option => `${option?.first_name} ${option?.last_name} (${option?.username})`}
+                          getOptionLabel={option =>
+                            `${option?.first_name} ${option?.last_name} ( شماره پرونده (${option?.document_number}))`
+                          }
                           label='پرونده های مرکز'
                           error={!!error}
                           helperText={error?.message}
@@ -346,169 +483,210 @@ const TableConsultationMeeting = ({
         </AccordionDetails>
       </Accordion>
 
-      <Card sx={{ mt: 5 }}>
-        <CardHeader
-          sx={{ textAlign: 'center' }}
-          title={
-            <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
-              {title}{' '}
-            </Typography>
+      <TableMeetingsConsultation
+        id={id}
+        filters={filters}
+        btnShow={false}
+        dataStruct={dataStruct}
+        previousData={[]}
+        checkboxEnabled={false}
+        titleTable={{ title: 'جلسات مشاوره', description: 'می توانید فهرست جلسات مشاوره را مشاهده کنید' }}
+        btnOperation={{
+          status: () => true,
+          delete: () => false,
+          edit: () => false,
+          show: () => false
+        }}
+        customOperation={[
+          {
+            icon: <BiTrash />,
+            onClick: (row: any) => {
+              setDeleteOpen(true)
+              setSelectedRow(row)
+            },
+            if: () => true,
+            color: 'error',
+            title: 'حذف جلسه'
+          },
+          {
+            icon: <BiEdit />,
+            onClick: (row: any) => {
+              setModalUpdateOpen(true)
+              setSelectedRow(row)
+            },
+            if: () => true,
+            color: 'primary',
+            title: 'ویرایش جلسه'
+          },
+          {
+            icon: <BiCalendarCheck />,
+            onClick: (row: any) => {
+              setModalReservationOpen(true)
+              setSelectedRow(row)
+            },
+            if: () => true,
+            color: 'warning',
+            title: 'رزرو'
+          },
+          {
+            icon: <BiCreditCard />,
+            onClick: (row: any) => openPaymentModal(row),
+            if: () => true,
+            color: 'success',
+            title: 'پرداخت'
+          },
+          {
+            icon: <BiXCircle />,
+            onClick: (row: any) => {
+              setCancelOpen(true)
+              setSelectedRow(row)
+            },
+            if: () => true,
+            color: 'error',
+            title: 'کنسل کردن'
+          },
+          {
+            icon: <BiListUl />,
+            onClick: (row: any) => {
+              setModalWatingListOpen(true)
+              setSelectedRow(row)
+            },
+            if: () => true,
+            color: 'info',
+            title: 'صف انتظار'
           }
-          subheader={description && <Typography variant='caption'>{description}</Typography>}
-        />
-        <Divider />
+        ]}
+        cardHeader={{
+          status: true,
+          btn: (
+            <>
+              <Button variant='contained' color='primary' sx={{ mr: 3 }} onClick={() => openEditModal()}>
+                ایجاد جلسه
+              </Button>
 
-        <Table>
-          <TableHead>
-            <TableRow>
-              {columns.map((col: any) => (
-                <TableCell key={col.key} align='center'>
-                  {col.label}
-                </TableCell>
-              ))}
-              {actions && <TableCell align='center'>عملیات</TableCell>}
-            </TableRow>
-          </TableHead>
+              <Button variant='contained' color='primary' sx={{ mr: 3 }} onClick={() => setModalGroupOpen(true)}>
+                ایجاد جلسه گروهی
+              </Button>
 
-          {isLoading ? (
-            <TableBody>
-              {new Array(6).fill(0).map((_: any, i: any) => (
-                <TableRow key={i}>
-                  <TableCell key={i}>
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-                      <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: `center !important`
-                      }}
-                    >
-                      <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: `center !important`
-                      }}
-                    >
-                      <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: `center !important`
-                      }}
-                    >
-                      <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: `center !important`
-                      }}
-                    >
-                      <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          ) : (
-            <TableBody>
-              {paginatedRows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length + 1} align='center'>
-                    داده‌ای وجود ندارد
-                  </TableCell>
-                </TableRow>
-              ) : (
-                paginatedRows.map((row: any, index: any) => (
-                  <TableRow key={index}>
-                    {columns.map((col: any) => (
-                      <TableCell key={col.key} align='center'>
-                        {getValueByPath(row, col.key)}
-                      </TableCell>
-                    ))}
-
-                    {actions && (
-                      <TableCell align='center'>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>{actions(row)}</Box>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          )}
-        </Table>
-
-        <TablePagination
-          component={() => (
-            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-              <Typography color='text.disabled'>
-                {`نمایش ${pageIndex * pageSize} تا  ${(Math.min(pageIndex + 1) * pageSize, rows?.length)} از ${rows?.length}`}
-              </Typography>
-
-              <div className='flex items-center'>
-                <FormControl sx={{ minWidth: 65, marginRight: 3, height: 38 }} size='small'>
-                  <Select
-                    sx={{
-                      height: 38,
-                      color: 'GrayText',
-                      '& .MuiSelect-icon': { color: 'GrayText' }
-                    }}
-                    IconComponent={props => <ArrowDropDownIcon {...props} />}
-                    labelId='demo-select-small-label'
-                    id='demo-select-small'
-                    value={pageSize}
-                    onChange={(e: any) => {
-                      setPageSize(e.target.value)
-                      setPageIndex(0)
-                    }}
-                  >
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={15}>15</MenuItem>
-                  </Select>
-                </FormControl>
-                <Pagination
-                  shape='rounded'
-                  color='primary'
-                  variant='tonal'
-                  count={Math.ceil(rows.length / pageSize)}
-                  page={pageIndex + 1}
-                  onChange={(_, page) => {
-                    setPageIndex(page - 1)
-                  }}
-                  showFirstButton
-                  showLastButton
-                />
-              </div>
-            </div>
-          )}
-          count={rows.length}
-          rowsPerPage={5}
-          page={pageIndex}
-          onPageChange={(_, page) => {
-            setPageIndex(page)
-          }}
-        />
-      </Card>
+              <Button
+                variant='contained'
+                color='warning'
+                sx={{ mr: 3 }}
+                onClick={() => setModalReservationGroupOpen(true)}
+              >
+                رزرو گروهی
+              </Button>
+            </>
+          )
+        }}
+      />
     </>
   )
 }
 
 export default TableConsultationMeeting
+
+{
+  /* <Card>
+        <CardContent>
+          <TableMeetingsConsultation
+            columns={[
+              { label: 'تاریخ / زمان', key: ['date', 'start_time', 'end_time'] },
+              {
+                label: 'پرونده',
+                key: [
+                  'consultationDocument.document_number',
+                  'consultationDocument.first_name',
+                  'consultationDocument.last_name',
+                  'consultationDocument.username'
+                ]
+              },
+              { label: 'هزینه / وضعیت پرداخت', key: ['price', 'payment_status'] },
+              { label: 'وضعیت جلسه', key: ['trainingMeetingType.name'] }
+            ]}
+            title='فهرست جلسات حضوری'
+            description='می توانید فهرست جلسات حضوری را مشاهده کنید'
+            rows={meetings}
+            isLoading={isLoading}
+            id={id}
+            onOpen={() => true}
+            upsertData={upsertData}
+            disabled={false}
+            actions={(row: any) => (
+              <>
+                <Tooltip arrow title='ویرایش'>
+                  <IconButton
+                    color='primary'
+                    onClick={() => {
+                      setModalReservationOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <HiOutlinePencilAlt size={18} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip arrow title='حذف جلسه'>
+                  <IconButton
+                    color='error'
+                    onClick={() => {
+                      setDeleteOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <BiTrash />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip arrow title='رزرو جلسه'>
+                  <IconButton
+                    color='warning'
+                    onClick={() => {
+                      setModalReservationOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <BiCalendarCheck />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip arrow title='پرداخت'>
+                  <IconButton
+                    color='success'
+                    onClick={() => {
+                      setModalPaymentOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <BiCreditCard />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip arrow title='کنسل کردن'>
+                  <IconButton
+                    color='error'
+                    onClick={() => {
+                      setCancelOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <BiXCircle />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip arrow title='صف انتظار'>
+                  <IconButton
+                    color='info'
+                    onClick={() => {
+                      setModalWatingListOpen(true)
+                      setSelectedRow(row)
+                    }}
+                  >
+                    <BiListUl />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+          />
+        </CardContent>
+      </Card> */
+}

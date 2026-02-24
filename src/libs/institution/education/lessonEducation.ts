@@ -116,17 +116,14 @@ export const deleteChapterCourseInstitution = async function (Data: any) {
 
 export const createResourceCourseInstitution = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const formData = new FormData()
     Object.keys(Data?.data).forEach(key => {
       if (Array.isArray(Data?.data[key])) {
         Data?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, Data?.data[key] ?? '')
-        console.log(key, Data?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -180,6 +177,50 @@ export const deleteResourceCourseInstitution = async function (Data: any) {
   try {
     const response = await axiosConfig.delete(
       `/institution/${Data?.id}/education/course/core/course/${Data?.courseId}/chapter/${Data?.chapterId}/resource/destroy/${Data?.rowId}`
+    )
+    const data = response.data?.data
+
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
+////////////////File Course
+
+export const createFileCourseStudentInstitution = async function (Data: any) {
+  try {
+    const formData = new FormData()
+    Object.keys(Data?.data).forEach(key => {
+      if (Array.isArray(Data?.data[key])) {
+        Data?.data[key].forEach((item: any, index: number) => {
+          formData.append(`${key}[${index}]`, item)
+        })
+      } else {
+        formData.append(key, Data?.data[key] ?? '')
+      }
+    })
+    const response = await axiosConfig.post(
+      `/institution/${Data?.id}/education/course/core/course/${Data?.courseId}/file/store`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    )
+    const data = response.data?.data
+
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
+export const deleteFileCourseInstitution = async function (Data: any) {
+  try {
+    const response = await axiosConfig.delete(
+      `/institution/${Data?.id}/education/course/core/course/${Data?.courseId}/file/destroy/${Data?.rowId}`
     )
     const data = response.data?.data
 
@@ -323,11 +364,9 @@ export const createCourseStudentInstitution = async function (Data: any) {
       if (Array.isArray(Data?.data[key])) {
         Data?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, Data?.data[key] ?? '')
-        console.log(key, Data?.data[key])
       }
     })
     const response = await axiosConfig.post(
@@ -354,11 +393,9 @@ export const updateCourseStudentInstitution = async function (Data: any) {
       if (Array.isArray(Data?.data[key])) {
         Data?.data[key].forEach((item: any, index: number) => {
           formData.append(`${key}[${index}]`, item)
-          console.log(`${key}[${index}]`, item)
         })
       } else {
         formData.append(key, Data?.data[key] ?? '')
-        console.log(key, Data?.data[key])
       }
     })
     formData.append('_method', 'put')
@@ -395,14 +432,7 @@ export const deleteCourseStudentInstitution = async function (Data: any) {
 export const uploadExcelToServer = async (file: any) => {
   try {
     const formData = new FormData()
-
-    file?.data.forEach((student: any, index: number) => {
-      formData.append(`students[${index}][username]`, student.username)
-      formData.append(`students[${index}][first_name]`, student.first_name)
-      formData.append(`students[${index}][last_name]`, student.last_name)
-      formData.append(`students[${index}][mobile]`, student.mobile)
-    })
-
+    formData.append('file', file.data)
     const response = await axiosConfig.post(
       `/institution/${file?.id}/education/course/core/course/${file?.courseId}/course-student/resolve-student`,
       formData,

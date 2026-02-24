@@ -1,16 +1,18 @@
 import Breadcrumb from '@/components/elements/Breadcrumb'
-import DashboardInstitutionCard from '@/components/pages/institution/cartable/DashboardInstitution'
+import DashboardOrganizationCard from '@/components/pages/organization/cartable/DashboardOrganization'
 
 export const metadata = {
   title: 'داشبورد',
   description: 'می توانید داشبورد مرکز را مشاهده کنید'
 }
 
-export default function DashboardUser() {
+export default async function DashboardOrganization({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  // const show = await fetchDataDashboardUser(id)
   return (
     <>
       <Breadcrumb items={[]} />
-      <DashboardInstitutionCard />
+      <DashboardOrganizationCard id={id} />
     </>
   )
 }

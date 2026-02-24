@@ -146,7 +146,7 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
 
   const navInstitution = [
     {
-      title: 'کارتابل مراکز',
+      title: 'کارتابل',
       icon: '/images/icons/menu/cartable.png',
       children: [
         {
@@ -156,19 +156,24 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
       ]
     },
     {
-      title: 'خدمات مشاوره',
-      icon: '/images/icons/menu/serviceReceiver.png',
+      title: 'مشاوره',
+      icon: '/images/icons/menu/experience.png',
       children: [
         {
-          title: 'تقویم جلسات مشاوره',
+          title: 'داشبورد',
+          icon: '/images/icons/menu/cartable.png',
+          path: `/institution/${id}/consultationServices/dashboard`
+        },
+        {
+          title: 'جلسات مشاوره',
           icon: '/images/icons/menu/calendar.png',
           children: [
             {
-              title: 'تقویم',
+              title: 'تقویم جلسات',
               path: `/institution/${id}/consultationServices/consultationCalendar/calender`
             },
             {
-              title: 'فهرست جلسات مشاوره',
+              title: 'فهرست جلسات',
               path: `/institution/${id}/consultationServices/consultationCalendar/consultationMeetings`
             },
             {
@@ -186,29 +191,33 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
               path: `/institution/${id}/consultationServices/consultationDocuments/documentList`
             }
           ]
-        },
-        {
-          title: 'یارانه مشاوره',
-          icon: '/images/icons/menu/charity.png',
-          children: [
-            {
-              title: 'فهرست درخواست ها',
-              path: `/institution/${id}/consultationServices/consultationSubsidy/requestsList`
-            },
-            {
-              title: 'فهرست درحال ارزیابی',
-              path: `/institution/${id}/consultationServices/consultationSubsidy/evaluationList`
-            }
-          ]
         }
       ]
     },
     {
-      title: 'مرکز1480',
+      title: 'یارانه مشاوره',
+      icon: '/images/icons/menu/charity.png',
+      children: [
+        {
+          title: 'فهرست درخواست ها',
+          path: `/institution/${id}/consultationSubsidy/requestsList`
+        },
+        {
+          title: 'فهرست درحال ارزیابی',
+          path: `/institution/${id}/consultationSubsidy/evaluationList`
+        },
+        {
+          title: 'فهرست یاری برگ ها',
+          path: `/institution/${id}/consultationSubsidy/consultationVoucher`
+        }
+      ]
+    },
+    {
+      title: 'مرکز 1480',
       icon: '/images/icons/menu/announcements.png',
       children: [
         {
-          title: 'تقویم',
+          title: 'تقویم 1480',
           path: `/institution/${id}/institution1480/calendar`
         },
         {
@@ -216,7 +225,7 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
           path: `/institution/${id}/institution1480/meetings/create`
         },
         {
-          title: 'فهرست جلسات',
+          title: 'فهرست جلسات 1480',
           path: `/institution/${id}/institution1480/meetings`
         }
       ]
@@ -241,6 +250,24 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
         {
           title: 'داشبورد',
           path: `/user/${id}/cartable/dashboard`
+        }
+      ]
+    },
+    {
+      title: 'آموزش',
+      icon: '/images/icons/menu/executionOrders.png',
+      children: [
+        {
+          title: 'مراکز آموزشی',
+          path: `/`
+        },
+        {
+          title: ' دوره های آموزشی',
+          path: `/user/${id}/education/educationalCourse`
+        },
+        {
+          title: 'تقویم جلسات آموزشی',
+          path: `/`
         }
       ]
     },
@@ -341,8 +368,35 @@ const VerticalMenu = ({ scrollMenu, panel }: Props) => {
       icon: '/images/icons/menu/experience.png',
       children: [
         {
-          title: 'در انتظار تایید',
-          path: `/organization/${id}/consultationServices/consultationSubsidy/pendingApproval`
+          title: 'داشبورد',
+          path: ``
+        },
+        {
+          title: 'پرونده های مشاوره',
+          path: `/organization/${id}/consultation/consultationDocument`
+        },
+        {
+          title: 'جلسات مشاوره',
+          path: `/organization/${id}/consultation/consultationMeetings`
+        }
+      ]
+    },
+
+    {
+      title: 'یارانه مشاوره',
+      icon: '/images/icons/menu/charity.png',
+      children: [
+        {
+          title: 'داشبورد',
+          path: ``
+        },
+        {
+          title: 'درخواست ها',
+          path: `/organization/${id}/consultationSubsidy/pendingApproval`
+        },
+        {
+          title: 'اعتبارات یارانه',
+          path: `/organization/${id}/consultationSubsidy/subsidyCredit`
         }
       ]
     },

@@ -30,7 +30,6 @@ export const getSystemMode = async (): Promise<SystemMode> => {
   const cookieStore = await cookies()
   const mode = await getMode()
   const colorPrefCookie = (cookieStore.get('colorPref')?.value || 'light') as SystemMode
-  // console.log(colorPrefCookie, mode, '/////////////////////')
 
   return (mode === 'system' ? colorPrefCookie : mode) || 'light'
 }

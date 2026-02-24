@@ -23,7 +23,6 @@ export default async function UserUpdatePage({ params } : { params: Promise<{id:
     const { id } = await params;
     const upsertData = await fetchUserUpsertData();
     const show = await fetchshowUser(id);
-    console.log(show, 'show')
 
     return (
         <>

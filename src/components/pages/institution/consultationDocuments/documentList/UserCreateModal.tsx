@@ -133,10 +133,6 @@ export default function Modal({
     region_id: null
   })
 
-  console.log(permissionsType, 'permissionstype')
-
-  // Vars
-  // Hooks
   const {
     control,
     setError,
@@ -191,7 +187,6 @@ export default function Modal({
 
   const onSubmit = async (values: any) => {
     try {
-      console.log(values, 'values')
       const result: any = {}
       Object.entries(values).forEach(([key, value]) => {
         if (value && typeof value === 'object' && 'id' in value) {
@@ -204,8 +199,6 @@ export default function Modal({
           result[key] = value
         }
       })
-
-      console.log(result, 'result')
 
       const res = await toast.promise(mutateAsync({ data: result, id: id }), {
         pending: 'در حال انجام ....'

@@ -75,14 +75,11 @@ export default function RequestFormCreate({ data, show, id }: any) {
           }
         }
       }
-      console.log(data, 'data')
 
       const res = await toast.promise(mutateAsync({ data: data, id: id }), {
         pending: 'در حال انجام....'
       })
       router.back()
-
-      console.log(res, 'res')
     } catch (error) {
       throw error
     }

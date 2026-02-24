@@ -60,7 +60,6 @@ export default function ModalSingleMeeting({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       const date = dateConverter(values?.date)
       const startTimeShamsi = values.start_time ? moment(values.start_time).format('HH:mm') : ''
       const endTimeShamsi = values.end_time ? moment(values.end_time).format('HH:mm') : ''
@@ -74,12 +73,9 @@ export default function ModalSingleMeeting({
         price: values.price || 0
       }
 
-      console.log(data, 'data submit')
-
       const response: any = await toast.promise(mutateAsync({ id: id, data: data }), {
         pending: 'در حال انجام...'
       })
-      console.log(response, 'response')
 
       if (!response?.status) {
         toast.error(response?.message)
@@ -89,7 +85,6 @@ export default function ModalSingleMeeting({
         const res: any = await toast.promise(create({ id: id, data: data }), {
           pending: 'در حال انجام...'
         })
-        console.log(res, 'res')
         reset()
         onClose()
 

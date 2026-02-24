@@ -26,6 +26,22 @@ export const fetchUpsertDataConsultationSubsidy = async function (id: any) {
   }
 }
 
+export const fetchShowDataConsultationSubsidy = async function ({ id, requestId }: any) {
+  try {
+    const response = await axiosConfig.get(
+      `/user/${id}/consultation-subsidy/core/consultation-subsidy/show/${requestId}`,
+      {
+        nextContext: true
+      }
+    )
+    const data = response.data?.data
+
+    return data
+  } catch (error) {
+    throw error
+  }
+}
+
 export const createConsultationSubsidy = async function (Data: any) {
   try {
     const response = await axiosConfig.post(

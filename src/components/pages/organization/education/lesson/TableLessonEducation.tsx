@@ -22,7 +22,6 @@ export default function LessonEducationTable({ id, data }: any) {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalOpenCreate, setModalOpenCreate] = useState(false)
   const [action, setAction] = useState<'edit' | 'show' | null>(null)
-  console.log(action, 'action')
   const [currentRow, setCurrentRow] = useState<any>(null)
   const openEditModal = (row: any) => {
     setAction('edit')

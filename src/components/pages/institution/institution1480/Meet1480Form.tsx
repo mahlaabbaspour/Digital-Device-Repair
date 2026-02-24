@@ -157,7 +157,6 @@ export default function CreateMeet1480Form({ id, upsertData }: any) {
         client_remarks: test1,
         note_advisor: test2
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(mutateAsync({ data: data, id: id }), {
         pending: 'درحال انجام ...'

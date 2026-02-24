@@ -9,7 +9,6 @@ import {
   Container,
   Grid,
   Typography,
-  Avatar,
   Divider,
   Autocomplete,
   TextField
@@ -27,48 +26,56 @@ import AccordionDetails from '@mui/material/AccordionDetails'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import InfoIcon from '@mui/icons-material/Info'
+import { useSession } from 'next-auth/react'
+import DialogAlertLoginLanding from './DialogAlertLoginLanding'
+import { getBadgeColors } from '@/configs/darkColor'
+import StarIcon from '@mui/icons-material/Star'
+import StarBorderIcon from '@mui/icons-material/StarBorder'
 
-const cardsData = [
-  {
-    title: 'خدمات مشاوره',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #fff7ba, #ffecd2)'
-  },
-  {
-    title: 'خدمات آموزشی',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #fceaff, #fdf0ff)'
-  },
-  {
-    title: 'خدمات حقوقی',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #d6f0ff, #e0f7ff)'
-  },
-  {
-    title: 'خدمات مالی',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #d4ffd4, #e6fff2)'
-  },
-  {
-    title: 'خدمات درمانی',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #ffe6e6, #fff1f1)'
-  },
-  {
-    title: 'خدمات پشتیبانی',
-    text1: 'توضیح کوتاه ۱',
-    text2: 'توضیح کوتاه ۲',
-    gradient: 'linear-gradient(135deg, #e0d4ff, #f2e6ff)'
+const cardStyle = (gradient: string) => ({
+  minHeight: 100,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  p: 2,
+  background: gradient,
+  borderRadius: 3,
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  transition: 'transform 0.3s, box-shadow 0.3s',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: '0 8px 20px rgba(0,0,0,0.2)'
   }
-]
+})
+
+const CardContentSection = ({ title, text1, text2 }: any) => (
+  <Box>
+    <Box display='flex' alignItems='center' gap={1} mb={1}>
+      <InfoIcon sx={{ color: '#333' }} />
+      <Typography variant='h6'>{title}</Typography>
+    </Box>
+
+    <Typography variant='body2' color='text.secondary'>
+      {text1}
+    </Typography>
+    <Typography variant='body2' color='text.secondary'>
+      {text2}
+    </Typography>
+  </Box>
+)
+
+const CardButton = ({ onClick }: any) => (
+  <Box display='flex' justifyContent='flex-end' mt={2}>
+    <Button variant='outlined' size='small' onClick={onClick}>
+      رزرو نوبت
+    </Button>
+  </Box>
+)
 
 export default function CardInstitution({ data }: any) {
-  console.log(data, 'data')
+  const session: any = useSession()
+  const total = 5
+  const filled = 3
   const router = useRouter()
   const {
     handleSubmit,
@@ -97,10 +104,11 @@ export default function CardInstitution({ data }: any) {
   const [filters, setFilters] = useState<any>([])
   const [filters1, setFilters1] = useState<any>({})
 
-  const { data: institutionCourse, isLoading: loadingCourse }: any = useFetchCourseInstitutionLanding(filters1)
+  const { data: institutionCourse, isLoading: loadingCourse }: any = useFetchCourseInstitutionLanding(
+    filters1 ?? filters
+  )
 
   const { data: institution, isLoading: loading }: any = useFetchInstitutionLanding(filters)
-  console.log(institution, 'inssjdfjldsjf')
 
   const onSubmit = async (values: any) => {
     try {
@@ -112,11 +120,13 @@ export default function CardInstitution({ data }: any) {
         region_id: values?.region_id?.id,
         activity_field_area_ids: values?.activity_field_area_ids?.map((el: any) => el?.id)
       }
+
       setFilters(data)
     } catch (error) {
       throw error
     }
   }
+  const userId = session?.data?.user?.user?.id
 
   const onSubmitCoursFilter = async (values: any) => {
     try {
@@ -138,13 +148,21 @@ export default function CardInstitution({ data }: any) {
 
   const [open, setOpen] = useState(true)
   const [open1, setOpen1] = useState(true)
+  const [alertOpen, setAlertOpen] = useState(false)
 
   return (
     <>
+      <DialogAlertLoginLanding
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title='برای ادامه لطفاً وارد حساب کاربری شوید'
+        description='برای رزرو نوبت لازم است ابتدا وارد حساب کاربری خود شوید.
+اگر حساب ندارید، می‌توانید به‌راحتی ثبت‌نام کنید.'
+      />
       <Box>
-        <Container maxWidth={false} sx={{ px: 15, py: 16, padding: 10 }}>
+        <Container maxWidth={false} sx={{ paddingX: 10 }}>
           <Grid container spacing={3} padding={10}>
-            <Grid item xs={12} lg={4}>
+            <Grid item xs={12} lg={3}>
               <Box
                 sx={{
                   p: 3,
@@ -235,7 +253,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='start_date'
                               control={control}
@@ -250,7 +268,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='end_date'
                               control={control}
@@ -320,7 +338,7 @@ export default function CardInstitution({ data }: any) {
                               control={controlCourse}
                               render={({ field: { onChange, value }, fieldState: { error } }) => (
                                 <CustomAsyncAutocomplete
-                                  url='/landing/education-institution/base/select/cityl'
+                                  url='/landing/education-institution/institution/base/select/city'
                                   onAddValue={onChange}
                                   value={value}
                                   getOptionLabel={option => option?.name}
@@ -332,7 +350,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='course_start_at'
                               control={controlCourse}
@@ -347,7 +365,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='course_end_at'
                               control={controlCourse}
@@ -362,7 +380,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} sm={3}>
+                          <Grid item xs={12} sm={12}>
                             <Controller
                               name='course_title'
                               control={controlCourse}
@@ -382,7 +400,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='request_level_id'
                               control={controlCourse}
@@ -407,7 +425,7 @@ export default function CardInstitution({ data }: any) {
                             />
                           </Grid>
 
-                          <Grid item xs={12} md={6}>
+                          <Grid item xs={12} md={12}>
                             <Controller
                               name='event_type_id'
                               control={controlCourse}
@@ -445,7 +463,7 @@ export default function CardInstitution({ data }: any) {
               </Box>
             </Grid>
 
-            <Grid item xs={12} lg={8}>
+            <Grid item xs={12} lg={9}>
               <Box
                 sx={{
                   p: 3,
@@ -463,7 +481,7 @@ export default function CardInstitution({ data }: any) {
 
                 <Grid container spacing={5}>
                   {institution?.map((item: any) => (
-                    <Grid item xs={12} sm={12} key={item?.id}>
+                    <Grid item xs={12} sm={6} key={item?.id}>
                       <Card
                         sx={{
                           height: '100%',
@@ -474,114 +492,147 @@ export default function CardInstitution({ data }: any) {
                           position: 'relative'
                         }}
                       >
-                        <CardMedia
-                          component='img'
-                          height='160'
-                          image={item?.banner?.address ?? '/images/images.jpg'}
-                          alt='institution'
-                          sx={{
-                            objectFit: 'cover'
-                          }}
-                        />
+                        <Grid container spacing={5}>
+                          <Grid item xs={12} lg={3}>
+                            <CardMedia
+                              component='img'
+                              height='160'
+                              image={item?.banner?.address ?? '/images/images.jpg'}
+                              alt='institution'
+                              sx={{
+                                objectFit: 'cover'
+                              }}
+                            />
+                          </Grid>
+                          <Grid item xs={12} lg={9}>
+                            <Box sx={{ p: 5 }}>
+                              <Typography variant='h6' component='div' sx={{ fontWeight: 900, fontSize: '1.25rem' }}>
+                                {item?.name}
+                              </Typography>
 
-                        <Avatar
-                          alt='avatar institution'
-                          src={item?.logo?.address}
-                          sx={{
-                            width: 60,
-                            height: 60,
-                            position: 'absolute',
-                            top: 130,
-                            left: 16,
-                            border: '3px solid #d3cfcfff',
-                            boxSizing: 'border-box',
-                            backgroundColor: 'white'
-                          }}
-                        />
+                              <Box sx={{ mt: 2 }}>
+                                <Typography variant='caption' color='text.secondary'>
+                                  مدیریت :{' '}
+                                  {`${item?.manager?.first_name} ${item?.manager?.last_name} (${item?.manager?.username})`}
+                                </Typography>
+                              </Box>
+
+                              {item?.activityFieldAreas?.length > 0 && (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 3 }}>
+                                  <Typography variant='caption' color='text.secondary' sx={{ mt: 0.5 }}>
+                                    حوزه های فعالیت :
+                                  </Typography>
+
+                                  {item?.activityFieldAreas?.map((el: any, index: number) => {
+                                    const { bg, text } = getBadgeColors(index)
+
+                                    return (
+                                      <Box
+                                        key={el?.id || index}
+                                        sx={{
+                                          px: 1.5,
+                                          py: 1,
+                                          borderRadius: '12px',
+                                          fontSize: '0.75rem',
+                                          bgcolor: bg,
+                                          color: text,
+                                          whiteSpace: 'nowrap',
+                                          display: 'flex',
+                                          alignItems: 'center'
+                                        }}
+                                      >
+                                        <Typography variant='caption' sx={{ color: text }}>
+                                          {el?.name}
+                                        </Typography>
+                                      </Box>
+                                    )
+                                  })}
+                                </Box>
+                              )}
+                            </Box>
+                          </Grid>
+                        </Grid>
 
                         <CardContent sx={{ flexGrow: 1, pt: 5 }}>
-                          <Box display='flex' justifyContent='center' alignItems='center' gap={2}>
-                            <Typography variant='h6' component='div'>
-                              {item?.name}
-                            </Typography>
-                          </Box>
-
                           <Grid container spacing={5}>
-                            <Grid item xs={12} lg={4}>
-                              <>
-                                <Box sx={{ mt: 3, ml: '72px' }}>
-                                  <Typography variant='caption' color='text.secondary'>
-                                    مدیر مرکز :{' '}
-                                    {`${item?.manager?.first_name} ${item?.manager?.last_name} (${item?.manager?.username})`}
-                                  </Typography>
-                                </Box>
-                                <Box sx={{ mt: 1, ml: '72px' }}>
-                                  <Typography variant='caption' color='text.secondary'>
-                                    نشانی : {item?.address}
-                                  </Typography>
-                                </Box>
-
-                                <Box sx={{ mt: 1, ml: '72px' }}>
-                                  <Typography variant='caption' color='text.secondary'>
-                                    حوزه های حیطه فعالیت :{' '}
-                                    {item?.activityFieldAreas?.map((el: any) => el?.name).join(' - ')}
-                                  </Typography>
-                                </Box>
-
-                                <Box sx={{ mt: 1, ml: '72px' }}>
-                                  <Typography variant='caption' color='text.secondary'>
-                                    نمره 4.6 از 187 رای
-                                  </Typography>
-                                </Box>
-                              </>
-                            </Grid>
-                            <Grid item xs={12} lg={8}>
+                            <Grid item xs={12} lg={12}>
                               <Grid container spacing={3}>
-                                {cardsData.map((el, index) => (
-                                  <Grid item xs={12} sm={6} lg={4} key={index}>
-                                    <Card
-                                      sx={{
-                                        minHeight: 100,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'space-between',
-                                        p: 2,
-                                        background: el.gradient,
-                                        borderRadius: 3,
-                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                        transition: 'transform 0.3s, box-shadow 0.3s',
-                                        '&:hover': {
-                                          transform: 'translateY(-5px)',
-                                          boxShadow: '0 8px 20px rgba(0,0,0,0.2)'
-                                        }
-                                      }}
-                                    >
-                                      <Box>
-                                        <Box display='flex' alignItems='center' gap={1} mb={1}>
-                                          <InfoIcon sx={{ color: '#333' }} />
-                                          <Typography variant='h6'>{el.title}</Typography>
-                                        </Box>
-                                        <Typography variant='body2' color='text.secondary'>
-                                          {el.text1}
-                                        </Typography>
-                                        <Typography variant='body2' color='text.secondary'>
-                                          {el.text2}
-                                        </Typography>
-                                      </Box>
+                                <Grid item xs={12} sm={6} lg={6}>
+                                  <Card sx={cardStyle('linear-gradient(135deg, #fff7ba, #ffecd2)')}>
+                                    <CardContentSection
+                                      title='خدمات مشاوره'
+                                      text1='جلسات مشاوره'
+                                      text2='جلسه مشاوره خود را رزرو کنید'
+                                    />
 
-                                      <Box display='flex' justifyContent='flex-end' mt={2}>
-                                        <Button
-                                          variant='contained'
-                                          color='primary'
-                                          size='small'
-                                          onClick={() => router.push(`/user/${item?.id}/institution/calendarMeetings`)}
-                                        >
-                                          رزرو نوبت
-                                        </Button>
-                                      </Box>
-                                    </Card>
-                                  </Grid>
-                                ))}
+                                    <CardButton
+                                      onClick={
+                                        session?.data
+                                          ? () =>
+                                              router.push(
+                                                `/user/${userId}/institution/calendarMeetings?institutionId=${item?.id}`
+                                              )
+                                          : () => setAlertOpen(true)
+                                      }
+                                    />
+                                  </Card>
+                                </Grid>
+
+                                <Grid item xs={12} sm={6} lg={6}>
+                                  <Card sx={cardStyle('linear-gradient(135deg, #fceaff, #fdf0ff)')}>
+                                    <CardContentSection
+                                      title='خدمات آموزشی'
+                                      text1='دوره های آموزشی'
+                                      text2='دوره آموزشی مورد نظر خود را انتخاب کنید'
+                                    />
+
+                                    <CardButton
+                                      onClick={
+                                        session?.data
+                                          ? () =>
+                                              router.push(
+                                                `/user/${userId}/education/allEducationalCourse?institutionId=${item?.id}`
+                                              )
+                                          : () => setAlertOpen(true)
+                                      }
+                                    />
+                                  </Card>
+                                </Grid>
+                              </Grid>
+                            </Grid>
+                            <Grid item xs={12} lg={12}>
+                              <Grid container spacing={5}>
+                                <Grid item xs={12} lg={9}>
+                                  <>
+                                    <Box sx={{ display: 'flex', justifyItems: 'stretch', gap: 20 }}>
+                                      <Typography variant='caption' color='text.secondary'>
+                                        استان : خراسان جنوبی
+                                      </Typography>
+                                      <Typography variant='caption' color='text.secondary'>
+                                        شهرستان : {item?.region?.name}
+                                      </Typography>
+                                    </Box>
+                                    <Box sx={{ mt: 2 }}>
+                                      <Typography variant='caption' color='text.secondary'>
+                                        نشانی : {item?.address}
+                                      </Typography>
+                                    </Box>
+                                  </>
+                                </Grid>
+                                <Grid item xs={12} lg={3}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
+                                    {Array.from({ length: total }).map((_, i) =>
+                                      i < filled ? (
+                                        <StarIcon key={i} sx={{ color: '#FFC107', fontSize: 20 }} />
+                                      ) : (
+                                        <StarBorderIcon key={i} sx={{ color: '#FFC107', fontSize: 20 }} />
+                                      )
+                                    )}
+                                  </Box>
+                                  <Box sx={{ mt: 1 }}>
+                                    <Typography>4.6 از 186 رای</Typography>
+                                  </Box>
+                                </Grid>
                               </Grid>
                             </Grid>
                           </Grid>

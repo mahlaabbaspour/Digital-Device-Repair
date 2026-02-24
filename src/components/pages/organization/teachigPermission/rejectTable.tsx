@@ -24,7 +24,6 @@ export default function TeachingPermissionRejectTable({ id }: any) {
   const router = useRouter()
   const [modalOpen, setModalOpen] = useState(false)
   const [row, setRow] = useState(null)
-  console.log(row, 'row')
 
   const openModal = (row: any) => {
     setRow(row)

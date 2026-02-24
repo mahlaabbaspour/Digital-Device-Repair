@@ -43,7 +43,6 @@ export default function DocumentListConsultantTable({ id }: any) {
   }
 
   const session: any = useSession()
-  console.log(session, 'dlksjfljdsl')
 
   return (
     <>

@@ -50,7 +50,6 @@ export default function CreateExamModal({
   rowSelect: any
   upsertData: any
 }) {
-  console.log(upsertData, 'upserData')
   const { control, handleSubmit, setError, reset } = useForm({
     defaultValues: {
       start_time: null,
@@ -89,7 +88,6 @@ export default function CreateExamModal({
         exam_type_id: values?.exam_type_id?.id,
         instruction: test1
       }
-      console.log(data, 'data')
       await toast.promise(mutateAsync({ data: data, id, courseId }), {
         pending: 'در حال انجام...'
       })

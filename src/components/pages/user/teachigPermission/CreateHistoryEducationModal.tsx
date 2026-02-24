@@ -39,7 +39,6 @@ export default function CreateHistoryEducationModal({
   teachId: string
   upsertData: any
 }) {
-  console.log(upsertData, 'upsertData')
   const { settings } = useSettings()
   const { control, handleSubmit, setError, reset } = useForm({
     defaultValues: {
@@ -58,7 +57,6 @@ export default function CreateHistoryEducationModal({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       const result: any = {}
       Object.entries(values).forEach(([key, value]) => {
         if (value && typeof value === 'object' && 'id' in value) {
@@ -71,7 +69,6 @@ export default function CreateHistoryEducationModal({
           result[key] = value
         }
       })
-      console.log(result, 'result')
       const res: any = await toast.promise(mutateAsync({ data: result, id, teachId }), {
         pending: 'در حال انجام...'
       })
@@ -315,7 +312,6 @@ export default function CreateHistoryEducationModal({
                           id={`file-input`}
                           onChange={(e: any) => {
                             const files = Array.from(e.target.files)
-                            console.log(e.target.files, 'flies')
 
                             onChange(files[0] ? files[0] : null)
                           }}

@@ -75,16 +75,20 @@ const HeadingInstitution: FC<SectionHero2Props> = ({ className = '' }) => {
   const renderItem = (index: number) => {
     return (
       <div ref={sectionRef} key={index} className={`relative w-full flex justify-center ${className}`}>
-        {/* Main Center Container */}
-        <div className='max-w-4xl w-full px-6 py-20 flex flex-col items-center text-center gap-8'>
-          {/* Animated Title */}
+        <div className='max-w-4xl w-full px-2 py-20 flex flex-col items-center gap-8'>
           <h6 className='font-semibold text-3xl sm:text-4xl md:text-5xl xl:text-6xl leading-[120%] text-slate-900'>
-            {visible && renderAnimatedWords('مراکز خدماتی')}
+            {visible && renderAnimatedWords('فهرست مراکز')}
           </h6>
 
-          {/* Animated Description */}
           <Box
-            sx={{ lineHeight: 2.2, color: 'text.secondary', fontSize: '1.05rem' }}
+            sx={{
+              lineHeight: 2.2,
+              color: 'text.secondary',
+              fontSize: '1.05rem',
+              textAlign: 'justify',
+
+              width: '100%'
+            }}
             component='div'
             className='max-w-3xl'
           >

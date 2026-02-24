@@ -45,7 +45,6 @@ export default function CommentConsultant({ documentId, id, advisorId }: any) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollableBoxRef = useRef<HTMLDivElement>(null)
   const [message, setMessage] = useState<any>([])
-  console.log(message, 'message')
   const [newMessage, setNewMessage] = useState('')
   const [replyingTo, setReplyingTo] = useState<any | null>(null)
   const [editingMessage, setEditingMessage] = useState<any | null>(null)
@@ -79,7 +78,6 @@ export default function CommentConsultant({ documentId, id, advisorId }: any) {
         body: newMessage,
         parent_id: null
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(mutateAsync({ data: data, id: id, rowId: documentId }), {
         pending: 'در حال ارسال..'
@@ -214,7 +212,6 @@ export default function CommentConsultant({ documentId, id, advisorId }: any) {
             }}
           >
             {message?.map((message: any) => {
-              console.log(message, 'message')
               const parantMessage = getParentMessage(message)
 
               return (

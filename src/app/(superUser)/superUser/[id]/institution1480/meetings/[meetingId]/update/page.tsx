@@ -11,7 +11,6 @@ export default async function CreateMeetInstitution1480({ params }: any) {
   const { id, meetingId } = await params
   const upsertData = await fetchInstitution1480UpsertData(id)
   const show = await fetchInstitution1480Show({ id, meetingId })
-  console.log(show, 'show')
 
   const items = [
     {

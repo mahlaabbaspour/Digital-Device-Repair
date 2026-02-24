@@ -27,6 +27,7 @@ import Button from '@mui/material/Button'
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import { Box } from '@mui/material'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -49,6 +50,7 @@ const UserDropdown = () => {
 
   // Hooks
   const { data: session }: any = useSession()
+
   const { settings } = useSettings()
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -80,21 +82,34 @@ const UserDropdown = () => {
 
   return (
     <>
-      <Badge
+      <Box
         ref={anchorRef}
-        overlap='circular'
-        badgeContent={<BadgeContentSpan onClick={handleDropdownOpen} />}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        className='mis-2'
+        onClick={handleDropdownOpen}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1.5,
+          cursor: 'pointer'
+        }}
       >
-        <Avatar
-          ref={anchorRef}
-          alt={session?.user?.name || ''}
-          src={session?.user?.image || ''}
-          onClick={handleDropdownOpen}
-          className='cursor-pointer bs-[38px] is-[38px]'
-        />
-      </Badge>
+        <Badge
+          overlap='circular'
+          badgeContent={<BadgeContentSpan />}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} className='bs-[38px] is-[38px]' />
+        </Badge>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <Typography fontSize={11} fontWeight={600} lineHeight={1.2}>
+            {session?.user?.user?.first_name} {session?.user?.user?.last_name}
+          </Typography>
+
+          <Typography variant='caption' fontSize={10} color='text.secondary' lineHeight={1.2}>
+            مدیر سیستم مشاوره
+          </Typography>
+        </Box>
+      </Box>
       <Popper
         open={open}
         transition
@@ -127,7 +142,7 @@ const UserDropdown = () => {
                         fontSize={'.9rem'}
                         color='text.primary'
                       >
-                        زهرا هاشمی
+                        {`${session?.user?.user?.first_name} ${session?.user?.user?.last_name}`}
                       </Typography>
                       <Typography
                         className=' cursor-pointer '
@@ -135,7 +150,7 @@ const UserDropdown = () => {
                         fontSize={'.9rem'}
                         color='text.primary'
                       >
-                        مدیر سازمان بهزیستی و نظارت
+                        {session?.user?.user?.username}
                       </Typography>
                     </div>
                   </div>

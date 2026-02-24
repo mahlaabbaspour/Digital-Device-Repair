@@ -23,6 +23,7 @@ import { Box, Divider, Typography } from '@mui/material'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { FaSchool } from 'react-icons/fa'
+import { updateInfoOrganizationAndInstitutionActive } from '@/libs/utils'
 
 const InstitutionDropdown = () => {
   const { data: session }: any = useSession()
@@ -64,17 +65,28 @@ const InstitutionDropdown = () => {
     }
   }
 
+  const handleOrganizationActive = async (id: any) => {
+    try {
+      const data = {
+        institution_id: id
+      }
+      const res = await updateInfoOrganizationAndInstitutionActive(data)
+    } catch (error) {
+      throw error
+    }
+  }
+
   return (
     <>
       <Tooltip
-        title='مراکز آموزشی'
+        title='مراکز'
         onOpen={() => setTooltipOpen(true)}
         onClose={() => setTooltipOpen(false)}
         open={open ? false : tooltipOpen ? true : false}
         slotProps={{ popper: { className: 'capitalize' } }}
       >
         <IconButton ref={anchorRef} onClick={handleToggle} className='text-textPrimary'>
-          <FaSchool />
+          <i className='tabler-building-community text-2xl' />
         </IconButton>
       </Tooltip>
       <Popper
@@ -112,7 +124,7 @@ const InstitutionDropdown = () => {
                   >
                     <Icon icon='mdi:school' fontSize={22} color='#7367F0' />
                     <Typography fontWeight={800} fontSize='14px'>
-                      مراکز آموزشی
+                      مراکز
                     </Typography>
                   </Box>
 
@@ -122,7 +134,10 @@ const InstitutionDropdown = () => {
                     {session?.user?.institutions?.map((el: any) => (
                       <MenuItem
                         key={el?.id}
-                        onClick={() => router.push(`/institution/${el?.id}/cartable/dashboard`)}
+                        onClick={() => {
+                          router.push(`/institution/${el?.id}/cartable/dashboard`)
+                          handleOrganizationActive(el?.id)
+                        }}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',

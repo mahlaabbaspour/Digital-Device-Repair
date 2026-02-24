@@ -35,7 +35,6 @@ export default function ConsultationCammandModal({
   selectedRow: any
   date: any
 }) {
-  console.log(selectedRow, 'selectedRow')
   const { control, handleSubmit, setError, setValue } = useForm({
     defaultValues: {
       command: ''

@@ -35,6 +35,7 @@ import { GeTErrorFetch } from '@/components/elements/errorHandler'
 import { toast } from 'react-toastify'
 
 export default function DiagnosisAndMeetingTable({ id, documentId, show }: any) {
+  console.log(show, 'show')
   const [selectedMeeting, setSelectedMeeting] = useState<any | null>(null)
   const [supervisorApproval, setSupervisorApproval] = useState(false)
 
@@ -207,12 +208,9 @@ export default function DiagnosisAndMeetingTable({ id, documentId, show }: any) 
         meeting_id: selectedMeetingId
       }
 
-      console.log(data, 'data')
-
       const res = await toast.promise(updateDocument({ data: data, id: id, documentId: documentId }), {
         pending: 'در حال انجام...'
       })
-      console.log(res, 'res')
     } catch (error) {
       GeTErrorFetch({ error, setError })
     }
@@ -767,7 +765,7 @@ export default function DiagnosisAndMeetingTable({ id, documentId, show }: any) 
                         control={control}
                         render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <CustomAsyncAutocomplete
-                            url={`/institution/${id}/consultation-document/base/select/clinical-diagnosis`}
+                            url={`/institution/${id}/inPerson-consultation/base/select/clinical-diagnosis`}
                             readOnly={false}
                             onAddValue={newValue => onChange(newValue)}
                             value={value || []}
@@ -787,7 +785,7 @@ export default function DiagnosisAndMeetingTable({ id, documentId, show }: any) 
                         control={control}
                         render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <CustomAsyncAutocomplete
-                            url={`/institution/${id}/consultation-document/base/select/mental-disorder`}
+                            url={`/institution/${id}/inPerson-consultation/base/select/mental-disorder`}
                             readOnly={false}
                             onAddValue={newValue => onChange(newValue)}
                             value={value || []}
@@ -807,7 +805,7 @@ export default function DiagnosisAndMeetingTable({ id, documentId, show }: any) 
                         control={control}
                         render={({ field: { onChange, value }, fieldState: { error } }) => (
                           <CustomAsyncAutocomplete
-                            url={`/institution/${id}/consultation-document/base/select/clinical-item`}
+                            url={`/institution/${id}/inPerson-consultation/base/select/clinical-item`}
                             readOnly={false}
                             onAddValue={newValue => onChange(newValue)}
                             value={value || []}

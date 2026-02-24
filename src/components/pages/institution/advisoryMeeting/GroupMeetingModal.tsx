@@ -211,7 +211,6 @@ export default function ModalGroupMeeting({
                     pending: 'در حال انجام....'
                   }
                 )
-                console.log(res, 'res')
                 setOpenAlert(false)
                 reset()
                 onClose()

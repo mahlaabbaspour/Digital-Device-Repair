@@ -7,7 +7,7 @@ const validateExcel = async (file: File) => {
   const sheet = workbook.Sheets[workbook.SheetNames[0]]
   const rows: any[] = XLSX.utils.sheet_to_json(sheet, { header: 1 })
 
-  const errors: { row: number; message: string }[] = []
+  const errors: { row: number; message: string[] }[] = []
 
   rows.slice(1).forEach((row, index) => {
     const rowNumber = index + 2
@@ -17,17 +17,25 @@ const validateExcel = async (file: File) => {
     const lastName = String(row[2] ?? '').trim()
     const mobile = String(row[3] ?? '').trim()
 
+    const rowErrors: string[] = []
+
     if (!nationalCode || !firstName || !lastName || !mobile) {
-      errors.push({ row: rowNumber, message: 'همه فیلدها باید پر باشند' })
-      return
+      rowErrors.push('همه فیلدها باید پر باشند')
     }
 
-    if (!/^\d{10}$/.test(nationalCode)) {
-      errors.push({ row: rowNumber, message: 'کد ملی باید ۱۰ رقم باشد' })
+    if (nationalCode && !/^\d{10}$/.test(nationalCode)) {
+      rowErrors.push('کد ملی باید ۱۰ رقم باشد')
     }
 
-    if (!/^\d{11}$/.test(mobile)) {
-      errors.push({ row: rowNumber, message: 'شماره موبایل باید ۱۱ رقم باشد' })
+    if (mobile && !/^\d{11}$/.test(mobile)) {
+      rowErrors.push('شماره موبایل باید ۱۱ رقم باشد')
+    }
+
+    if (rowErrors.length > 0) {
+      errors.push({
+        row: rowNumber,
+        message: rowErrors
+      })
     }
   })
 

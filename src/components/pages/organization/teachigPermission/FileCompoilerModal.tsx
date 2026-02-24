@@ -18,7 +18,6 @@ import {
 import Image from 'next/image'
 
 export default function FileCompilerModal({ onClose, open, file }: { onClose: any; open: boolean; file: any }) {
-  console.log(file, 'file')
   return (
     <>
       <Dialog TransitionComponent={Transition} fullWidth open={open} maxWidth='md' scroll='body'>

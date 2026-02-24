@@ -76,8 +76,6 @@ export default function CreateOnlineMeetingModal({
         training_meeting_type_id: values?.training_meeting_type_id?.id,
         guest_access: values?.guest_access
       }
-      console.log(data, 'data')
-      console.log(values, 'values')
       await toast.promise(mutateAsync({ data: data, id, courseId }), {
         pending: 'در حال انجام...'
       })

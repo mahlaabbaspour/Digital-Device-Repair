@@ -124,7 +124,6 @@ export const createSupervisorComment = async function (fromData: any) {
 
 export const updateDiagnosisAndDocumentInstitution = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const response = await axiosConfig.put(
       `/institution/${Data?.id}/inPerson-consultation/core/inPerson-consultation/update-consultation/${Data?.documentId}`,
       Data?.data

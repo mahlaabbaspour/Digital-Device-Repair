@@ -79,7 +79,6 @@ export default function UpdateHistoryComposingRevisionModal({
         status: values?.status,
         objection: values?.objection
       }
-      console.log(data, 'data')
       const res: any = await toast.promise(mutateAsync({ data: data, id, revisionId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })

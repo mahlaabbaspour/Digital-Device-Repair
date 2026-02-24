@@ -77,7 +77,6 @@ export default function UpdateHistoryStudyRevisionModal({
       const res: any = await toast.promise(mutateAsync({ data: data, id, revisionId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })
-      console.log(res, 'res')
       if (res?.status) {
         onClose()
         reset()

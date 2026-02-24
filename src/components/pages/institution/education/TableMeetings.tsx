@@ -35,8 +35,6 @@ const TableMeetingsCourse = ({
   upsertData,
   disabled
 }: any) => {
-  console.log(id, upsertData, 'id')
-  console.log(columns, 'coulumns')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 

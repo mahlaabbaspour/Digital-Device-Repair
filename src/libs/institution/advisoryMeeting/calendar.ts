@@ -31,7 +31,6 @@ export const fetchUpsertDataCalendar = async function (id: any) {
 
 export const createCheckCalendar = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const response = await axiosConfig.post(
       `/institution/${Data?.id}/meeting/core/consultation-meeting/check-time-conflict`,
       Data?.data
@@ -46,7 +45,6 @@ export const createCheckCalendar = async function (Data: any) {
 
 export const createCheckSingleCalendar = async function (Data: any) {
   try {
-    console.log(Data, 'Data')
     const response = await axiosConfig.post(
       `/institution/${Data?.id}/meeting/core/consultation-meeting/check-single-conflict`,
       Data?.data
@@ -61,7 +59,6 @@ export const createCheckSingleCalendar = async function (Data: any) {
 
 export const createCalendar = async function (Data: any) {
   try {
-    console.log(Data, 'dataaaaaaaaa')
     const response = await axiosConfig.post(
       `/institution/${Data?.id}/meeting/core/consultation-meeting/store-batch`,
       Data?.data

@@ -53,8 +53,6 @@ export default function ModalMeetUser({
     return date
   }
 
-  console.log(selectedEvent, 'seleteeee')
-
   useEffect(() => {
     if (selectedEvent) {
       //@ts-ignore

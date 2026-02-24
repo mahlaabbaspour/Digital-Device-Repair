@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 
 type ErrorItem = {
   row: number
-  message: string
+  message: any
 }
 
 export default function ExcelErrorsTable({ errors }: { errors: ErrorItem[] }) {
@@ -35,7 +35,7 @@ export default function ExcelErrorsTable({ errors }: { errors: ErrorItem[] }) {
                 }}
               >
                 <TableCell>{err.row}</TableCell>
-                <TableCell sx={{ color: '#d32f2f' }}>{err.message}</TableCell>
+                <TableCell sx={{ color: '#d32f2f' }}>{err.message?.map((el: any) => el).join(' / ')}</TableCell>
               </TableRow>
             ))}
           </TableBody>

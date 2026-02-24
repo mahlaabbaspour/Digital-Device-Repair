@@ -3,6 +3,7 @@ import {
   createChapterCourseInstitution,
   createCourseStudentInstitution,
   createExamCourseInstitution,
+  createFileCourseStudentInstitution,
   createInPersonMeetingCourseInstitution,
   createLessonEducationalInstitution,
   createOnlineMeetingCourseInstitution,
@@ -10,6 +11,7 @@ import {
   deleteChapterCourseInstitution,
   deleteCourseStudentInstitution,
   deleteExamCourseInstitution,
+  deleteFileCourseInstitution,
   deleteInPersonMeetingCourseInstitution,
   deleteOnlineMeetingCourseInstitution,
   deleteResourceCourseInstitution,
@@ -193,6 +195,55 @@ export function useDeleteResourceCourseInstitution() {
     onSuccess: (_, variables) => {
       const { id, courseId } = variables
       queryClient.invalidateQueries({ queryKey: ['chaptersInstitution', id, courseId] })
+      toast.success('با موفقیت حذف شد')
+    },
+    onError: error => {
+      toast.error('خطایی رخ داد')
+      throw error
+    }
+  })
+
+  return { mutateAsync, isPending }
+}
+
+////////////File Course/////////////
+
+export const useFetchFileCourseStudentInstitution = ({ id, courseId }: { id: string; courseId: string }) => {
+  return useQuery({
+    queryKey: ['filesCourse', id, courseId],
+    enabled: !!id && !!courseId,
+    queryFn: async () => {
+      const res = await axiosConfig.get(`/institution/${id}/education/course/core/course/${courseId}/file/`)
+      return res.data?.data
+    }
+  })
+}
+
+export function useCreateFileCourseStudentInstitution() {
+  const queryClient = useQueryClient()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: ({ data, id, courseId }: any) => createFileCourseStudentInstitution({ data, id, courseId }),
+    onSuccess: (_, variables) => {
+      const { id, courseId } = variables
+      queryClient.invalidateQueries({ queryKey: ['filesCourse', id, courseId] })
+      toast.success('با موفقیت ایجاد شد')
+    },
+    onError: error => {
+      toast.error('خطایی رخ داد')
+      throw error
+    }
+  })
+
+  return { mutateAsync, isPending }
+}
+
+export function useDeleteFileCourseStudentInstitution() {
+  const queryClient = useQueryClient()
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: ({ data, id, courseId, rowId }: any) => deleteFileCourseInstitution({ data, id, courseId, rowId }),
+    onSuccess: (_, variables) => {
+      const { id, courseId } = variables
+      queryClient.invalidateQueries({ queryKey: ['filesCourse', id, courseId] })
       toast.success('با موفقیت حذف شد')
     },
     onError: error => {

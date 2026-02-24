@@ -7,7 +7,7 @@ export default async function InstitutionPage() {
   const data = await fetchInstitutionLandingUpsertData()
   return (
     <>
-      <Box sx={{ mt: 20 }}>
+      <Box sx={{ mt: 10 }}>
         <HeadingInstitution />
       </Box>
       <div>

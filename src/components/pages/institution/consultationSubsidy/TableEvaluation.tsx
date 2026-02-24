@@ -57,9 +57,7 @@ export default function EvaluationInstitutionTable({ id }: any) {
           {
             icon: <MdOutlineAssessment />,
             onClick: (row: any) =>
-              router.push(
-                `/institution/${id}/consultationServices/consultationSubsidy/evaluationList/${row?.id}/evaluation`
-              ),
+              router.push(`/organization/${id}/consultationSubsidy/pendingApproval/${row?.id}/evaluation`),
             if: () => true,
             color: 'success',
             title: 'ارزیابی'

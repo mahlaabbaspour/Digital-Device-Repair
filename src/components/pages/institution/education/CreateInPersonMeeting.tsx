@@ -69,7 +69,6 @@ export default function CreateInPersonMeetingModal({
         description: values?.description,
         training_meeting_type_id: values?.training_meeting_type_id?.id
       }
-      console.log(data, 'data')
       await toast.promise(mutateAsync({ data: data, id, courseId }), {
         pending: 'در حال انجام...'
       })

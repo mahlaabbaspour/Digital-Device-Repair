@@ -8,16 +8,11 @@ export const authOptions: any = {
       credentials: { username: { label: 'Username', type: 'text' }, password: { label: 'Password', type: 'password' } },
       async authorize(credentials) {
         try {
-          // const response = await login({username: credentials?.username , password: credentials?.password});
-          // const userData = response?.data;
           const response: any = await axiosConfig.post(`/auth/login`, {
             username: credentials?.username,
             password: credentials?.password
           })
           const userData: any = response?.data?.data
-          console.log(userData, 'USER DATA')
-
-          console.log(userData, 'USER DATA')
 
           if (userData?.token) {
             return {
@@ -28,7 +23,6 @@ export const authOptions: any = {
             return { error: response?.message }
           }
         } catch (error) {
-          console.log('Authorize Error:', error)
           return error
         }
       }

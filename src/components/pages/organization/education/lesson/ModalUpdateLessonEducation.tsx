@@ -78,11 +78,10 @@ export default function ModalUpdateLessonEducation({
           result[key] = value
         }
       })
-      console.log(result, 'result')
+
       const res = await toast.promise(mutateAsync({ data: result, id: id, rowId: currentRow?.id }), {
         pending: 'در حال انجام ...'
       })
-      console.log(res, 'res')
       await onClose()
       reset()
     } catch (error) {

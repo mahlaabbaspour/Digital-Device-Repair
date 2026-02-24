@@ -41,7 +41,6 @@ import CreateReservationMeetingSingle from './SingleMeetingReservationModal'
 import ModalPaymentMeeting from './MeetingPaymentModal'
 import CreateReservationMeetingGroup from './GroupMeetingReservationModal'
 import CreateWatingListMeeting from './WatinigListMeetingModal'
-import { FaDeskpro } from 'react-icons/fa'
 import Link from 'next/link'
 
 const StatusColors: any = {
@@ -66,8 +65,9 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 export default function CalendarCard({ id, show, upsertData, tomorrowDate, yesterdayDate, todayDate }: any) {
   const [datas, setDatas] = useState<any>()
+  console.log(datas, 'datas')
   const shifts = datas ? datas : show
-  console.log(shifts, 'shifts')
+
   const formateNowDate = todayDate ? parse(todayDate, 'yyyy/MM/dd', new Date()) : null
   const formateExtDate = tomorrowDate ? parse(tomorrowDate, 'yyyy/MM/dd', new Date()) : null
   const formatePrevDate = yesterdayDate ? parse(yesterdayDate, 'yyyy/MM/dd', new Date()) : null
@@ -150,8 +150,8 @@ export default function CalendarCard({ id, show, upsertData, tomorrowDate, yeste
       />
       <ModalPaymentMeeting
         id={id}
-        title='قطعی کردن جلسه'
-        description='می توانید با پرداخت هزینه جلسه را قطعی کنید'
+        title='پرداخت / تخصیص یاری برگ'
+        description='می توانید جلسه مورد نظر را پرداخت کنید و یارانه مورد نظر را می توانید تخصیص دهید و جلسه مورد نظر را قطعی کنید'
         open={modalPaymentOpen}
         onClose={() => setModalPaymentOpen(false)}
         selectedRow={selectedRow}
@@ -438,7 +438,6 @@ export default function CalendarCard({ id, show, upsertData, tomorrowDate, yeste
                                 </Table>
 
                                 {el.meetings?.map((m: any, index: number) => {
-                                  console.log(m, 'm')
                                   const toMinutes = (t: string) =>
                                     t
                                       .split(':')

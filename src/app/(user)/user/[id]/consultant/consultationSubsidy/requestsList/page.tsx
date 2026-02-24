@@ -8,7 +8,7 @@ export const metadata = {
 
 const items = [
   {
-    title: 'فهرست پرونده ها'
+    title: 'فهرست درخواست ها'
   }
 ]
 

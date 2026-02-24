@@ -23,7 +23,6 @@ export default function RaceTable() {
   const [modalOpen, setModalOpen] = useState(false)
   const [modalOpenCreate, setModalOpenCreate] = useState(false)
   const [action, setAction] = useState<'edit' | 'show' | null>(null)
-  console.log(action, 'action')
   const [currentRow, setCurrentRow] = useState<any>(null)
   const openEditModal = (row: any) => {
     setAction('edit')

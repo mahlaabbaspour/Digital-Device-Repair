@@ -100,7 +100,6 @@ const Login = ({ mode }: { mode: SystemMode }) => {
     e.preventDefault()
     if (username && password) {
       const newData = { username, password }
-      console.log(newData, 'NEW DATA')
       setisLoading(true)
 
       try {
@@ -123,10 +122,8 @@ const Login = ({ mode }: { mode: SystemMode }) => {
             }
           }
         }
-
-        console.log(response, 'responsssssssss')
       } catch (error) {
-        console.log(error)
+        throw error
       }
       setisLoading(false)
     } else {

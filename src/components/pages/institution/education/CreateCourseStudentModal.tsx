@@ -13,23 +13,17 @@ import {
   CardContent,
   Grid,
   TextField,
-  Autocomplete,
   FormControlLabel,
   Switch,
   Box
 } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { GeTErrorFetch } from '@/components/elements/errorHandler'
-import {
-  useCreateCourseStudentInstitution,
-  useCreateExamCourseInstitution
-} from '@/hooks/institution/education/useLessonEducation'
+import { useCreateCourseStudentInstitution } from '@/hooks/institution/education/useLessonEducation'
 import { CloseRounded } from '@mui/icons-material'
 import { toast } from 'react-toastify'
-import { dateConverter, dateTimeConverter } from '@/helpers/DateHelpers'
-import { EditorState } from 'draft-js'
+import { dateConverter } from '@/helpers/DateHelpers'
 import { useState } from 'react'
-import { convertEditorContent } from '@/helpers/EditorsHelper'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import CustomAsyncAutocomplete from '@/components/elements/CustomAsyncAutocomplete'
 import CustomDatePicker from '@/components/elements/customDatePicker'
@@ -39,23 +33,17 @@ import FileList from './FileList'
 import validateExcel from '@/helpers/ValidateExcel'
 import ExcelErrorsTable from './ExcelErrorsTable'
 import { uploadExcelToServer } from '@/libs/institution/education/lessonEducation'
-import parseExcel from '@/helpers/ParseExcel'
-import parseExcelToArray from '@/helpers/ParseExcel'
 
 export default function CreateCourseStudentModal({
   onClose,
   open,
   id,
-  courseId,
-  rowSelect,
-  upsertData
+  courseId
 }: {
   onClose: any
   open: boolean
   id: string
   courseId: string
-  rowSelect: any
-  upsertData: any
 }) {
   const { settings } = useSettings()
   const { control, handleSubmit, setError, reset, watch } = useForm({
@@ -71,6 +59,7 @@ export default function CreateCourseStudentModal({
   })
 
   const [errorExcel, setErrorExcel] = useState<any>(null)
+  const [user, setUser] = useState(null)
 
   const { mutateAsync, isPending }: any = useCreateCourseStudentInstitution()
 
@@ -84,7 +73,7 @@ export default function CreateCourseStudentModal({
         bankDocumentFile: values?.bankDocumentFile,
         bank_document_number: values?.bank_document_number,
         description: values?.description,
-        student_ids: values?.student_ids?.map((el: any) => el?.id)
+        student_ids: values?.student_ids.length > 0 ? values?.student_ids?.map((el: any) => el?.id) : user
       }
       await toast.promise(mutateAsync({ data: data, id, courseId }), {
         pending: 'در حال انجام...'
@@ -117,13 +106,14 @@ export default function CreateCourseStudentModal({
     const errors = await validateExcel(selectedFile)
     setErrorExcel(errors)
 
-    const studentsArray = await parseExcelToArray(selectedFile)
-    console.log(studentsArray, 'studentsArraystudentsArraystudentsArray')
-
     if (errors.length === 0) {
       try {
-        const res = await uploadExcelToServer({ data: studentsArray, id: id, courseId: courseId })
-        console.log(res, 'res')
+        const res = await uploadExcelToServer({ data: selectedFile, id: id, courseId: courseId })
+        if (!res?.status) {
+          setErrorExcel(res?.message?.errors)
+        } else if (res?.status) {
+          setUser(res?.data?.user_ids)
+        }
       } catch (error) {
         throw error
       }
@@ -202,7 +192,9 @@ export default function CreateCourseStudentModal({
                             onAddValue={newValue => onChange(newValue)}
                             value={value}
                             multiple={true}
-                            getOptionLabel={optien => optien?.name}
+                            getOptionLabel={optien =>
+                              `${optien?.first_name} ${optien?.last_name} (${optien?.username})`
+                            }
                             label='فراگیران'
                             error={!!error}
                             helperText={error?.message}
@@ -459,7 +451,6 @@ export default function CreateCourseStudentModal({
                               id='file-input-bank'
                               style={{ display: 'none' }}
                               onChange={(e: any) => {
-                                console.log(e.target.files, 'sldfjlsjdfljdsljfs')
                                 const file = e.target.files[0] ?? null
                                 onChange(file)
                               }}

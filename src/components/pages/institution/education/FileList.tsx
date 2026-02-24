@@ -65,40 +65,40 @@ function FileList({ id, courseId }: any) {
   //     }
   //   }
 
-  const downloadFile = async () => {
-    try {
-      const response = await axiosConfig.get(
-        `/institution/${id}/education/course/core/course/${courseId}/course-student/upsert-data`,
-        {
-          responseType: 'blob'
-        }
-      )
+  // const downloadFile = async () => {
+  //   try {
+  //     const response = await axiosConfig.get(
+  //       `/institution/${id}/education/course/core/course/${courseId}/course-student/upsert-data`,
+  //       {
+  //         responseType: 'blob'
+  //       }
+  //     )
 
-      const blob = new Blob([response.data], {
-        type: response.data.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      })
+  //     const blob = new Blob([response.data], {
+  //       type: response.data.type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  //     })
 
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
+  //     const url = window.URL.createObjectURL(blob)
+  //     const link = document.createElement('a')
+  //     link.href = url
 
-      const contentDisposition = response.headers['content-disposition'] || ''
-      let fileName = 'فراگیران.xlsx'
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename="?(.+)"?/)
-        if (match && match[1]) fileName = decodeURIComponent(match[1])
-      }
+  //     const contentDisposition = response.headers['content-disposition'] || ''
+  //     let fileName = 'فراگیران.xlsx'
+  //     if (contentDisposition) {
+  //       const match = contentDisposition.match(/filename="?(.+)"?/)
+  //       if (match && match[1]) fileName = decodeURIComponent(match[1])
+  //     }
 
-      link.download = fileName
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+  //     link.download = fileName
+  //     document.body.appendChild(link)
+  //     link.click()
+  //     document.body.removeChild(link)
 
-      window.URL.revokeObjectURL(url)
-    } catch (err) {
-      console.error('خطا در دانلود فایل:', err)
-    }
-  }
+  //     window.URL.revokeObjectURL(url)
+  //   } catch (err) {
+  //     console.error('خطا در دانلود فایل:', err)
+  //   }
+  // }
 
   return (
     <StyledList disablePadding>
@@ -114,8 +114,9 @@ function FileList({ id, courseId }: any) {
         </div>
         <ListItemSecondaryAction>
           <Button
-            disabled={isDownloading}
-            onClick={downloadFile}
+            component='a'
+            href='http://192.168.1.106:96/files/excel/students.xlsx'
+            download
             variant='contained'
             size='small'
             sx={{ fontFamily: 'inherit' }}

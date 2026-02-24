@@ -11,8 +11,6 @@ export default function CardInstitutionShow({
   title: string
   description: string
 }) {
-  console.log(data, 'data')
-
   return (
     <>
       <Card>

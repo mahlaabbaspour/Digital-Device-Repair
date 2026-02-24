@@ -48,7 +48,6 @@ export default function UpdateCourseStudentModal({
   disabled: any
 }) {
   const { settings } = useSettings()
-  console.log(rowSelect, 'rowSelect')
   const { control, handleSubmit, setError, reset, watch, setValue } = useForm({
     defaultValues: {
       payment_status: 0,
@@ -81,8 +80,6 @@ export default function UpdateCourseStudentModal({
 
   async function onSubmit(values: any) {
     try {
-      // 'instruction'
-      console.log(values, 'values')
       const date1 = values?.bank_document_date ? dateConverter(values?.bank_document_date) : null
       const data = {
         bank_document_date: date1,
@@ -92,7 +89,6 @@ export default function UpdateCourseStudentModal({
         bank_document_number: values?.bank_document_number,
         description: values?.description
       }
-      console.log(data, 'data')
       await toast.promise(mutateAsync({ data: data, id, courseId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })
@@ -104,7 +100,6 @@ export default function UpdateCourseStudentModal({
   }
 
   const [value, setValue1] = useState<'group' | 'file'>('group')
-  console.log(value, 'valueee')
 
   const handleChange = (event: React.MouseEvent<HTMLElement>, newValue: 'group' | 'file' | null) => {
     if (newValue !== null) setValue1(newValue)
@@ -296,7 +291,6 @@ export default function UpdateCourseStudentModal({
                               id='file-input-bank'
                               style={{ display: 'none' }}
                               onChange={(e: any) => {
-                                console.log(e.target.files, 'sldfjlsjdfljdsljfs')
                                 const file = e.target.files[0] ?? null
                                 onChange(file)
                               }}

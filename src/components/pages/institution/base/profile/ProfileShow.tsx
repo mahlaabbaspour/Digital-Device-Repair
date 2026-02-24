@@ -80,7 +80,6 @@ const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
 }))
 
 export default function ProfileInstitutionShow({ id, show }: any) {
-  console.log(show, 'show')
   const [value, setTabValue] = useState<string>('info')
   const handleTabsChange = (event: SyntheticEvent, newValue: string) => {
     setTabValue(newValue)

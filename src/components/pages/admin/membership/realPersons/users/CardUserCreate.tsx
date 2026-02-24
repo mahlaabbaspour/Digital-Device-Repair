@@ -72,7 +72,6 @@ const CreateUserForm = ({
   disabled?: boolean
   id?: string
 }) => {
-  console.log(upsertData, upsertData)
   // States
   const router = useRouter()
   const [file, setFile] = useState<File | null>(null)
@@ -147,13 +146,11 @@ const CreateUserForm = ({
         ...result,
         avatar: file
       }
-      console.log(data, 'data')
       await toast.promise(mutateAsync(data), {
         pending: 'در حال انجام ....'
       })
       router.back()
     } catch (error) {
-      console.log(error, 'error')
       GeTErrorFetch({ error, setError })
     }
   }

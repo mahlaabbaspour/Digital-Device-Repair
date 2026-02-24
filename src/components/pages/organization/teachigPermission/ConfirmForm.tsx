@@ -45,7 +45,6 @@ import { GeTErrorFetch } from '@/components/elements/errorHandler'
 import { useRouter } from 'next/navigation'
 
 export default function ConfirmForm({ id, revisionId, upsertData = [], show }: any) {
-  console.log(show, 'show')
   const { control, handleSubmit, setError, reset, watch, setValue } = useForm({
     defaultValues: {
       request_teaching_permission_status_id: 0,

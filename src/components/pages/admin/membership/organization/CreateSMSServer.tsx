@@ -16,7 +16,6 @@ import { toast } from "react-toastify";
 
 function CreateSMSServer({ action, currentRow, id ,open, title, description , setOpen , disabled} : any) {
 
-    console.log(action, currentRow)
 
 
       const { handleSubmit, control, formState: { errors }, setError, setValue, reset, clearErrors }: any = useForm({
@@ -31,7 +30,6 @@ function CreateSMSServer({ action, currentRow, id ,open, title, description , se
         }
     });
     const rowId = currentRow?.id
-    console.log(rowId, 'ROWID')
     const type = action;
 
         useEffect(() => {
@@ -72,7 +70,6 @@ function CreateSMSServer({ action, currentRow, id ,open, title, description , se
             
             
           } catch (error) {
-            console.log(error, 'error')
               GeTErrorFetch({error, setError})
           }
     }

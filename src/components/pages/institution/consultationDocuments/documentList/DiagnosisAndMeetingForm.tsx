@@ -23,7 +23,6 @@ import { Controller, useForm } from 'react-hook-form'
 import SubmitButton from '@/components/elements/submitButton'
 import { dateConverter } from '@/helpers/DateHelpers'
 import moment from 'moment-jalaali'
-import { useCreateMeetInstitution1480 } from '@/hooks/superUser/useInstitution1480'
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -116,7 +115,7 @@ export default function DiagnosisAndDocumentUpdateMeeting1480({ id, upsertData =
   const [remarks, setRemarks] = useState(EditorState.createEmpty())
   const [note, setNote] = useState(EditorState.createEmpty())
 
-  const { mutateAsync, isPending }: any = useCreateMeetInstitution1480()
+  // const { mutateAsync, isPending }: any = useCreateMeetInstitution1480()
 
   async function onSubmit(values: any) {
     try {
@@ -143,12 +142,12 @@ export default function DiagnosisAndDocumentUpdateMeeting1480({ id, upsertData =
         institution_id: values?.institution_id?.id
       }
 
-      const res: any = await toast.promise(mutateAsync({ data: data, id: id }), {
-        pending: 'درحال انجام ...'
-      })
-      if (res?.status) {
-        router.back()
-      }
+      // const res: any = await toast.promise(mutateAsync({ data: data, id: id }), {
+      //   pending: 'درحال انجام ...'
+      // })
+      // if (res?.status) {
+      //   router.back()
+      // }
     } catch (error) {
       throw error
     }
@@ -579,38 +578,6 @@ export default function DiagnosisAndDocumentUpdateMeeting1480({ id, upsertData =
                   )}
                 />
               </Grid>
-
-              {/* {isSubsidyActive && (
-                        <Grid item xs={12} md={4}>
-                          <Controller
-                            name='consultation_subsidy_id'
-                            control={control}
-                            render={({ field: { value, onChange }, fieldState: { error } }) => (
-                              <Autocomplete
-                                readOnly={false}
-                                options={upsertData?.consultationSubsides || []}
-                                value={value}
-                                onChange={(_, newvalue: any) => {
-                                  onChange(newvalue)
-                                  console.log(newvalue, 'newValue')
-        
-                                  if (newvalue) {
-                                    const discount =
-                                      upsertData?.consultationFreeInstitution * (newvalue?.discount_percentage / 100)
-                                    const price = upsertData?.consultationFreeInstitution - discount
-                                    setValue('consultation_fee', price)
-                                  }
-                                }}
-                                noOptionsText='هیچ نتیجه ای یافت نشد'
-                                getOptionLabel={(options: any) => `${options?.name} (${options?.discount_percentage}%)` || ''}
-                                renderInput={params => (
-                                  <TextField label='یارانه مشاوره' {...params} error={!!error} helperText={error?.message} />
-                                )}
-                              />
-                            )}
-                          />
-                        </Grid>
-                      )} */}
 
               <Grid item xs={12} sm={4}>
                 <Controller

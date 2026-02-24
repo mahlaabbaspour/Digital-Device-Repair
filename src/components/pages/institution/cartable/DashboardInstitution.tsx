@@ -5,7 +5,17 @@ import { FluentColorCalendarDataBar24 } from '@components/layout/vertical/svgIco
 import Link from '@/components/Link'
 import { Box, Card, CardContent, CardHeader, Grid, Typography } from '@mui/material'
 import Image from 'next/image'
-import { FcApproval, FcCancel, FcInspection, FcRedo, FcTodoList } from 'react-icons/fc'
+import {
+  FcApproval,
+  FcCheckmark,
+  FcEmptyFilter,
+  FcInspection,
+  FcMoneyTransfer,
+  FcNext,
+  FcProcess,
+  FcRedo,
+  FcTodoList
+} from 'react-icons/fc'
 import dynamic from 'next/dynamic'
 import { useTheme } from '@mui/material/styles'
 import type { ApexOptions } from 'apexcharts'
@@ -13,7 +23,8 @@ import type { ApexOptions } from 'apexcharts'
 // Styled Component Imports
 const AppReactApexCharts = dynamic(() => import('@/libs/styles/AppReactApexCharts'))
 
-export default function DashboardInstitutionCard() {
+export default function DashboardInstitutionCard({ show }: any) {
+  console.log(show, 'show')
   return (
     <Grid container spacing={6}>
       <Grid item xs={6}>
@@ -22,11 +33,11 @@ export default function DashboardInstitutionCard() {
             sx={{ pb: 1.25 }}
             title={
               <Typography variant='h5' sx={{ fontWeight: 700 }}>
-                کارتابل
+                پرونده های مشاوره
               </Typography>
             }
-            action={<FluentColorCalendarDataBar24 width={45} height={45} />}
-            subheader={<Typography variant='caption'>آمار مربوط به ماژول برنامه های آموزش سالانه</Typography>}
+            action={<Image src={'/images/icons/menu/experience.png'} width={45} height={45} alt='image' />}
+            subheader={<Typography variant='caption'>آمار مربوط به پرونده های مشاوره در مرکز</Typography>}
           />
           <CardContent>
             <Grid container spacing={4} mt={2.5}>
@@ -37,8 +48,8 @@ export default function DashboardInstitutionCard() {
                       <FcTodoList size={22} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{4}</Typography>
-                      <Typography variant='body1'>در انتظار تایید</Typography>
+                      <Typography variant='h6'>{show?.consultationDocuments?.open}</Typography>
+                      <Typography variant='body1'>مفتوح</Typography>
                     </Box>
                   </Box>
                 </Link>
@@ -51,8 +62,8 @@ export default function DashboardInstitutionCard() {
                       <FcRedo size={22} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{9}</Typography>
-                      <Typography variant='body1'>درخواست ویرایش</Typography>
+                      <Typography variant='h6'>{show?.consultationDocuments?.closed}</Typography>
+                      <Typography variant='body1'>مختومه</Typography>
                     </Box>
                   </Box>
                 </Link>
@@ -62,11 +73,11 @@ export default function DashboardInstitutionCard() {
                 <Link href={'#'}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
-                      <FcApproval size={24} />
+                      <FcNext size={24} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{2}</Typography>
-                      <Typography variant='body1'>تایید شده</Typography>
+                      <Typography variant='h6'>{show?.consultationDocuments?.referred}</Typography>
+                      <Typography variant='body1'>ارجاع شده</Typography>
                     </Box>
                   </Box>
                 </Link>
@@ -82,11 +93,11 @@ export default function DashboardInstitutionCard() {
             sx={{ pb: 1.25 }}
             title={
               <Typography variant='h5' sx={{ fontWeight: 700 }}>
-                جلسات سال جاری
+                جلسات مشاوره
               </Typography>
             }
-            action={<Image src={'/images/icons/menu/education.png'} width={45} height={45} alt='image' />}
-            subheader={<Typography variant='caption'>آمار مربوط به ماژول دوره های جاری</Typography>}
+            action={<Image src={'/images/icons/menu/track.png'} width={45} height={45} alt='image' />}
+            subheader={<Typography variant='caption'>آمار مربوط به جلسات مشاوره در دوره های آموزشی</Typography>}
           />
           <CardContent>
             <Grid container spacing={4} mt={2.5}>
@@ -94,11 +105,11 @@ export default function DashboardInstitutionCard() {
                 <Link href={'#'}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
-                      <FcInspection size={24} />
+                      <FcEmptyFilter size={24} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{4}</Typography>
-                      <Typography variant='body1'>دارای مجوز</Typography>
+                      <Typography variant='h6'>{show?.consultationMeetings?.open}</Typography>
+                      <Typography variant='body1'>آزاد</Typography>
                     </Box>
                   </Box>
                 </Link>
@@ -108,11 +119,11 @@ export default function DashboardInstitutionCard() {
                 <Link href={'#'}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
-                      <FcCancel size={24} />
+                      <FcCheckmark size={24} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{9}</Typography>
-                      <Typography variant='body1'>فاقد مجوز</Typography>
+                      <Typography variant='h6'>{show?.consultationMeetings?.reserved}</Typography>
+                      <Typography variant='body1'>رزرو شده</Typography>
                     </Box>
                   </Box>
                 </Link>
@@ -122,11 +133,71 @@ export default function DashboardInstitutionCard() {
                 <Link href={'#'}>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
-                      <FcCancel size={24} />
+                      <FcApproval size={24} />
                     </CustomAvatar>
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant='h6'>{9}</Typography>
-                      <Typography variant='body1'>فاقد مجوز</Typography>
+                      <Typography variant='h6'>{show?.consultationMeetings?.reserved}</Typography>
+                      <Typography variant='body1'>قطعی</Typography>
+                    </Box>
+                  </Box>
+                </Link>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      <Grid item xs={6}>
+        <Card>
+          <CardHeader
+            sx={{ pb: 1.25 }}
+            title={
+              <Typography variant='h5' sx={{ fontWeight: 700 }}>
+                یارانه مشاوره
+              </Typography>
+            }
+            action={<Image src={'/images/icons/menu/charity.png'} width={45} height={45} alt='image' />}
+            subheader={<Typography variant='caption'>آمار مربوط به یارانه مشاوره و اعتبار مانده مرکز</Typography>}
+          />
+          <CardContent>
+            <Grid container spacing={4} mt={2.5}>
+              <Grid item xs={12} sm={4}>
+                <Link href={'#'}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
+                      <FcTodoList size={24} />
+                    </CustomAvatar>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Typography variant='h6'>{show?.consultationSubsides?.approved}</Typography>
+                      <Typography variant='body1'>تعداد درخواست ها</Typography>
+                    </Box>
+                  </Box>
+                </Link>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <Link href={'#'}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
+                      <FcProcess size={24} />
+                    </CustomAvatar>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Typography variant='h6'>{show?.consultationSubsides?.underEvaluation}</Typography>
+                      <Typography variant='body1'>در حال ارزیابی</Typography>
+                    </Box>
+                  </Box>
+                </Link>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <Link href={'#'}>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <CustomAvatar skin='light' variant='rounded' sx={{ mr: 4 }}>
+                      <FcMoneyTransfer size={24} />
+                    </CustomAvatar>
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <Typography variant='h6'>37%</Typography>
+                      <Typography variant='body1'>مانده اعتبار</Typography>
                     </Box>
                   </Box>
                 </Link>

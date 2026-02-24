@@ -55,7 +55,6 @@ export default function CreateReservationMeetingGroup({
   date: any
 }) {
   const [documentData, setDocumentData] = useState<any>()
-  console.log(documentData, 'documentData')
   const { control, handleSubmit, setError, clearErrors } = useForm({
     defaultValues: {
       number: ''
@@ -91,14 +90,13 @@ export default function CreateReservationMeetingGroup({
   })
 
   async function onSubmit(values: any) {
-    console.log({ [searchBy]: values?.number })
+
     clearErrors()
     try {
       const response = await toast.promise(mutateAsync({ [searchBy]: values?.number }), {
         pending: 'در حال انجام...'
       })
       setDocumentData(response.data?.data)
-      console.log(response?.data, 'res')
       if (response.data.data) {
         toast.success('عملیات با موفقیت انجام شد')
       } else {
@@ -156,7 +154,6 @@ export default function CreateReservationMeetingGroup({
   const [isLoad, setIsLoad] = useState(true)
 
   const [selectedMeetings, setSelectedMeetings] = useState<number[]>([])
-  console.log(selectedMeetings, 'selectedMeetings')
 
   const handleSelectMeetings = (meet: any) => {
     setSelectedMeetings(prev => {

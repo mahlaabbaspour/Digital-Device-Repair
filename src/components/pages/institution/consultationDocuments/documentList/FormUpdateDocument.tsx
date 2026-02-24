@@ -35,8 +35,6 @@ export default function FormUpdateDocumentConsultation({ documentId, id, upsertD
       marital_id: null,
       employment_status_id: null,
       activity_field_area_ids: [],
-      service_fee_type_id: null,
-      consultation_fee: '',
       service_recipient_type_ids: [],
       service_recipient_decile: ''
     }
@@ -56,14 +54,11 @@ export default function FormUpdateDocumentConsultation({ documentId, id, upsertD
       setValue('description', show?.description)
       setValue('activity_field_area_ids', show?.activityFieldAreas)
       setValue('service_recipient_type_ids', show?.serviceRecipientTypes)
-      setValue('service_fee_type_id', show?.serviceFeeType)
-      setValue('consultation_fee', show?.consultation_fee)
       setValue('advisor_ids', show?.advisors)
       setValue('service_recipient_decile', show?.service_recipient_decile)
     }
   }, [show])
 
-  const [isSubsidyActive, setIsSubsidyActive] = useState(true)
   const { mutateAsync, isPending } = useUpdateConsultationDocuments()
 
   const onSubmit = async (values: any) => {
@@ -103,6 +98,7 @@ export default function FormUpdateDocumentConsultation({ documentId, id, upsertD
       <form onSubmit={handleSubmit(onSubmit)}>
         <Card>
           <CardHeader
+            sx={{ textAlign: 'center' }}
             title={
               <Typography variant='h6' sx={{ fontWeight: 900 }}>
                 {action === 'edit' ? 'ویرایش پرونده' : 'نمایش پرونده'}
@@ -355,53 +351,6 @@ export default function FormUpdateDocumentConsultation({ documentId, id, upsertD
                       error={!!error}
                       helperText={error?.message}
                     ></CustomAsyncAutocomplete>
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name='service_fee_type_id'
-                  control={control}
-                  render={({ field: { value, onChange }, fieldState: { error } }) => (
-                    <Autocomplete
-                      readOnly={disabled}
-                      options={upsertData?.ServiceFreeTypes || []}
-                      value={value}
-                      onChange={(_, newvalue: any) => {
-                        onChange(newvalue)
-
-                        if (newvalue?.id === 2) {
-                          setIsSubsidyActive(true)
-                        } else if (newvalue?.id === 1) {
-                          setValue('consultation_fee', upsertData?.consultationFreeInstitution)
-                        } else if (newvalue?.id === 3) {
-                          setValue('consultation_fee', '0')
-                        }
-                      }}
-                      noOptionsText='هیچ نتیجه ای یافت نشد'
-                      getOptionLabel={(options: { name: string }) => options?.name || ''}
-                      renderInput={params => (
-                        <TextField label='نوع هزینه' {...params} error={!!error} helperText={error?.message} />
-                      )}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={4}>
-                <Controller
-                  name='consultation_fee'
-                  control={control}
-                  render={({ field, fieldState: { error } }) => (
-                    <TextField
-                      {...field}
-                      error={!!error}
-                      InputProps={{ readOnly: disabled }}
-                      helperText={error?.message}
-                      fullWidth
-                      label='هزینه مشاوره (هر جلسه )'
-                    />
                   )}
                 />
               </Grid>

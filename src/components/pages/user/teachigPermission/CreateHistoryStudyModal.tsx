@@ -59,7 +59,6 @@ export default function CreateHistoryStudyModal({
           result[key] = value
         }
       })
-      console.log(result, 'result')
       const res: any = await toast.promise(mutateAsync({ data: result, id, teachId }), {
         pending: 'در حال انجام...'
       })
@@ -262,8 +261,6 @@ export default function CreateHistoryStudyModal({
                           id={`file-input`}
                           onChange={(e: any) => {
                             const files = Array.from(e.target.files)
-                            console.log(e.target.files, 'flies')
-
                             onChange(files[0] ? files[0] : null)
                           }}
                           style={{ display: 'none' }}

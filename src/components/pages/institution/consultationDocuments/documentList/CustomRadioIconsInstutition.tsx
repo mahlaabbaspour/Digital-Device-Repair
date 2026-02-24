@@ -11,7 +11,6 @@ const CustomRadioIconsInstution = (props: any) => {
   // ** Props
   const { data, icon, name, selected, handleChange, color = 'primary', setSupervisorApproval } = props
   const { id } = data
-  console.log(data, 'datadddddd')
 
   const renderComponent = () => {
     return (

@@ -40,7 +40,6 @@ export default function ChangeStatusDocumentConsultant({
   id: string
   selectedRow: any
 }) {
-  console.log(selectedRow, 'selectedRow')
   const { control, handleSubmit, setError, clearErrors, setValue, watch } = useForm({
     defaultValues: {
       consultation_document_status_id: null,
@@ -59,7 +58,6 @@ export default function ChangeStatusDocumentConsultant({
 
   async function onSubmit(values: any) {
     try {
-      console.log(values, 'values')
       if (!values?.consultation_document_status_id) {
         toast.error('ایتدا وضعیت پرونده را انتخاب کنید')
       }
@@ -69,7 +67,6 @@ export default function ChangeStatusDocumentConsultant({
         target_institution_id: values?.target_institution_id?.id,
         referral_description: values?.referral_description
       }
-      console.log(data, 'data')
 
       const res: any = await toast.promise(mutateAsync({ data: data, id: id, rowId: selectedRow?.id }), {
         pending: ' در حال انجام ...'

@@ -48,7 +48,6 @@ export default function UpdateInPersonMeetingModal({
   upsertData: any
   disabled: any
 }) {
-  console.log(rowSelect, 'rowSelect')
   const { control, handleSubmit, setError, reset, clearErrors, setValue } = useForm({
     defaultValues: {
       date: null,
@@ -93,14 +92,13 @@ export default function UpdateInPersonMeetingModal({
         description: values?.description,
         training_meeting_type_id: values?.training_meeting_type_id?.id
       }
-      console.log(data, 'dattttttttt')
       await toast.promise(mutateAsync({ data: data, id, courseId, rowId: rowSelect?.id }), {
         pending: 'در حال انجام...'
       })
       onClose()
       reset()
     } catch (error) {
-      console.log(error, 'eee')
+      throw error
     }
   }
 
