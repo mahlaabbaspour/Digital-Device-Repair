@@ -2,6 +2,8 @@
 import Button from '@mui/material/Button'
 
 // Layout Imports
+import { ToastContainer } from 'react-toastify'
+
 import LayoutWrapper from '@layouts/LayoutWrapper'
 import VerticalLayout from '@layouts/VerticalLayout'
 import HorizontalLayout from '@layouts/HorizontalLayout'
@@ -15,12 +17,13 @@ import ScrollToTop from '@core/components/scroll-to-top'
 import { getMode, getSystemMode } from '@/@core/utils/serverHelpers'
 import Navbar from '@/components/layout/vertical/Navbar'
 
+import 'react-toastify/dist/ReactToastify.css'
+
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const systemMode = await getSystemMode()
   const mode = await getMode()
 
   return (
-    // <AuthGuard>
     <>
       <LayoutWrapper
         systemMode={systemMode}
@@ -37,8 +40,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
         </Button>
       </ScrollToTop>
       <Customizer dir={'rtl'} />
+
+      <ToastContainer />
     </>
-    //{' '}
-    // </AuthGuard>
   )
 }

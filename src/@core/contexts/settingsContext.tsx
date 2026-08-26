@@ -5,11 +5,12 @@ import type { ReactNode } from 'react'
 import { createContext, useMemo, useState } from 'react'
 
 // Type Imports
-import type { Mode, Skin, Layout, LayoutComponentWidth } from '@core/types'
 
 // Config Imports
 import themeConfig from '@configs/themeConfig'
 import primaryColorConfig from '@configs/primaryColorConfig'
+
+import type { Mode, Skin, Layout, LayoutComponentWidth } from '@core/types'
 
 // Hook Imports
 import { useObjectCookie } from '@core/hooks/useObjectCookie'
@@ -51,7 +52,6 @@ export const SettingsContext = createContext<SettingsContextProps | null>(null)
 
 // Settings Provider
 export const SettingsProvider = (props: Props) => {
-
   const initialSettings: Settings = {
     mode: themeConfig.mode,
     skin: themeConfig.skin,
@@ -73,6 +73,7 @@ export const SettingsProvider = (props: Props) => {
     themeConfig.settingsCookieName,
     JSON.stringify(props.settingsCookie) !== '{}' ? props.settingsCookie : updatedInitialSettings
   )
+
   // State
   const [_settingsState, _updateSettingsState] = useState<Settings>(
     JSON.stringify(settingsCookie) !== '{}' ? settingsCookie : updatedInitialSettings

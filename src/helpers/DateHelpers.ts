@@ -12,6 +12,7 @@ export function dateConverter(date: any): string | null {
 
   // If the date is not in Jalali format, convert it
   const formattedGregorianDate = date ? format(new Date(date), 'yyyy/MM/dd') : null
+
   const formattedJalaliDate = formattedGregorianDate
     ? jalaliMoment(formattedGregorianDate, 'YYYY/MM/DD').locale('fa').format('YYYY/MM/DD')
     : null
@@ -73,6 +74,7 @@ export function convertJalaliToGregorian(jalaliDateString: string): string | nul
     return gregorianMoment.format('YYYY-MM-DD')
   } catch (error) {
     console.error('Error converting Jalali to Gregorian:', error)
+
     return null
   }
 }
@@ -104,9 +106,31 @@ export function dateTimeConverter(dateTime: any): string | null {
 
 export const parseTimeToDate = (time: string | undefined | null) => {
   if (!time) return null
+
   // ساعت و دقیقه را جدا می‌کنیم
   const [hour, minute] = time.split(':').map(Number)
   const date = new Date() // تاریخ امروز
+
   date.setHours(hour, minute, 0, 0) // ست کردن ساعت و دقیقه
+
   return date
+}
+
+export function formatGregorian(dateTime: string): string | null {
+  if (!dateTime) return null
+
+  const d = new Date(dateTime)
+
+  if (isNaN(d.getTime())) return null
+
+  const pad = (n: number) => n.toString().padStart(2, '0')
+
+  const year = d.getFullYear()
+  const month = pad(d.getMonth() + 1)
+  const day = pad(d.getDate())
+  const hours = pad(d.getHours())
+  const minutes = pad(d.getMinutes())
+  const seconds = pad(d.getSeconds())
+
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }

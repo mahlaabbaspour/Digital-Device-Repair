@@ -4,11 +4,8 @@
 import { useRef, useState } from 'react'
 import type { MouseEvent } from 'react'
 
-// Third-party Imports
-import { signOut, useSession } from 'next-auth/react'
-
 // Next Imports
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import Image from 'next/image'
 
@@ -25,9 +22,9 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
 
-// Hook Imports
-import { useSettings } from '@core/hooks/useSettings'
 import { Box } from '@mui/material'
+
+import { useSettings } from '@/@core/hooks/useSettings'
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -43,18 +40,10 @@ const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { id } = useParams()
+  const { settings } = useSettings()
 
   // Refs
   const anchorRef = useRef<HTMLDivElement>(null)
-
-  // Hooks
-  const { data: session }: any = useSession()
-
-  const { settings } = useSettings()
-  const handleDropdownOpen = () => {
-    !open ? setOpen(true) : setOpen(false)
-  }
 
   const handleDropdownClose = (event?: MouseEvent<HTMLLIElement> | (MouseEvent | TouchEvent), url?: string) => {
     if (url) {
@@ -70,21 +59,17 @@ const UserDropdown = () => {
 
   const handleUserLogout = async () => {
     try {
-      await signOut({ callbackUrl: process.env.NEXT_PUBLIC_APP_URL, redirect: false })
+      // await signOut({ callbackUrl: process.env.NEXT_PUBLIC_APP_URL, redirect: false })
       router.replace('/auth/login')
     } catch (error) {
       console.error(error)
     }
-  }
-  if (session === null) {
-    handleUserLogout()
   }
 
   return (
     <>
       <Box
         ref={anchorRef}
-        onClick={handleDropdownOpen}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -97,16 +82,16 @@ const UserDropdown = () => {
           badgeContent={<BadgeContentSpan />}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} className='bs-[38px] is-[38px]' />
+          <Avatar alt={''} src={''} className='bs-[38px] is-[38px]' />
         </Badge>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
           <Typography fontSize={11} fontWeight={600} lineHeight={1.2}>
-            {session?.user?.user?.first_name} {session?.user?.user?.last_name}
+            Admin
           </Typography>
 
           <Typography variant='caption' fontSize={10} color='text.secondary' lineHeight={1.2}>
-            مدیر سیستم مشاوره
+            حمیده بهشتی فر
           </Typography>
         </Box>
       </Box>
@@ -134,7 +119,7 @@ const UserDropdown = () => {
                     tabIndex={-1}
                     onClick={e => handleDropdownClose(e, '/admin/profile/user-profile')}
                   >
-                    <Avatar alt={session?.user?.name || ''} src={session?.user?.image || ''} />
+                    <Avatar alt={''} src={''} />
                     <div className='flex items-start flex-col ' style={{ maxWidth: '12rem' }}>
                       <Typography
                         className=' cursor-pointer '
@@ -142,7 +127,7 @@ const UserDropdown = () => {
                         fontSize={'.9rem'}
                         color='text.primary'
                       >
-                        {`${session?.user?.user?.first_name} ${session?.user?.user?.last_name}`}
+                        dfgdg
                       </Typography>
                       <Typography
                         className=' cursor-pointer '
@@ -150,7 +135,7 @@ const UserDropdown = () => {
                         fontSize={'.9rem'}
                         color='text.primary'
                       >
-                        {session?.user?.user?.username}
+                        dfgdg
                       </Typography>
                     </div>
                   </div>
@@ -174,7 +159,7 @@ const UserDropdown = () => {
                       endIcon={
                         <Image src={'/images/icons/menu/serviceReceiver.png'} width={24} height={24} alt='image' />
                       }
-                      href={`/user/${session?.user?.user?.id}/cartable/dashboard`}
+                      href={`/user/cartable/dashboard`}
                       fullWidth
                       color='inherit'
                       sx={{
@@ -191,7 +176,7 @@ const UserDropdown = () => {
                       endIcon={
                         <Image src={'/images/icons/menu/serviceReceiver.png'} width={24} height={24} alt='image' />
                       }
-                      href={`/superUser/${session?.user?.user?.id}/cartable/dashboard`}
+                      href={`/superUser/cartable/dashboard`}
                       fullWidth
                       color='inherit'
                       sx={{

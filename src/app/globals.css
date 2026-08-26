@@ -4,16 +4,18 @@
 
 @font-face {
   font-family: 'IRANSans';
-  src: url('/fonts/iransans-pro/IRANSansXFaNum-Regular.ttf') format('woff'),
-      url('/fonts/iransans-pro/IRANSansXFaNum-Regular.ttf') format('truetype');
-   font-weight: 400;
-   font-style: normal;
+  src:
+    url('/fonts/iransans-pro/IRANSansXFaNum-Regular.ttf') format('woff'),
+    url('/fonts/iransans-pro/IRANSansXFaNum-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
   font-family: 'IRANSans';
-  src: url('/fonts/iransans-pro/IRANSansXFaNum-Medium.ttf') format('woff'),
-      url('/fonts/iransans-pro/IRANSansXFaNum-Medium.ttf') format('truetype');
+  src:
+    url('/fonts/iransans-pro/IRANSansXFaNum-Medium.ttf') format('woff'),
+    url('/fonts/iransans-pro/IRANSansXFaNum-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
@@ -41,7 +43,7 @@
 
 *,
 ::before,
-::after { 
+::after {
   font-family: 'IRANSans' !important;
   box-sizing: border-box;
   padding: 0;
@@ -147,4 +149,38 @@ code {
   color: var(--mui-palette-info-main);
   background-color: rgb(var(--mui-palette-info-mainChannel) / 0.08);
   border: 0;
+}
+.content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+
+  background-image: url('/images/pages/auth-v2-register-mask-light.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+////
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+#__next {
+  min-height: 100vh;
+}
+
+.content-right {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.content-right > div {
+  min-height: 100vh;
 }

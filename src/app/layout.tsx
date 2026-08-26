@@ -7,8 +7,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // Type Imports
 import type { ChildrenType } from '@core/types'
 
-import QueryProvider from '@/context/QueryProvider'
-
 // Util Imports
 import { getSystemMode } from '@core/utils/serverHelpers'
 
@@ -18,30 +16,32 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 import Providers from '@/components/Providers'
+import QueryProvider from '@/context/QueryProvider'
+
+import 'react-toastify/dist/ReactToastify.css'
+import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
-  title: 'سامانه مشاوره',
-  description:
-    'می توانید سامانه مشاوره را مشاهده نمایید'
+  title: 'سامانه خدمات پرستاری در منزل'
+
+  // description: 'سیستم مدیریت انبار و کالا'
 }
 
 const RootLayout = async (props: ChildrenType) => {
   const { children } = props
 
-  // Vars
-
   const systemMode = await getSystemMode()
   const direction = 'rtl'
 
   return (
-    <html id='__next' lang='en' dir={direction} suppressHydrationWarning>
+    <html id='__next' lang='fa' dir={direction} suppressHydrationWarning>
       <body className='flex is-full min-bs-full flex-auto flex-col'>
         <InitColorSchemeScript attribute='data' defaultMode={systemMode} />
+
         <Providers direction={'rtl'}>
-              <QueryProvider>
-                   {children}
-              </QueryProvider>
-         </Providers>   
+          <QueryProvider>{children}</QueryProvider>
+        </Providers>
+        <ToastContainer position='top-left' autoClose={3000} />
       </body>
     </html>
   )

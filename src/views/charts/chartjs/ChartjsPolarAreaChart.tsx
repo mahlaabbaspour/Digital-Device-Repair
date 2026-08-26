@@ -6,13 +6,9 @@ import CardContent from '@mui/material/CardContent'
 // ** Third Party Imports
 import { PolarArea } from 'react-chartjs-2'
 import { ChartData, ChartOptions, Chart as ChartJS, RadialLinearScale, ArcElement, Tooltip, Legend } from 'chart.js'
-import OptionsMenu from '@/components/option-menu'
 import { Typography } from '@mui/material'
 
 ChartJS.register(RadialLinearScale, ArcElement, Tooltip, Legend)
-
-// ** Custom Components Imports
-// import OptionsMenu from 'src/@core/components/option-menu'
 
 interface PolarAreaProps {
   info: string
@@ -24,11 +20,38 @@ interface PolarAreaProps {
   legendColor: string
   title: string
   description: string
+  dataChart: any
 }
 
 const ChartjsPolarAreaChart = (props: PolarAreaProps) => {
-  // ** Props
-  const { info, grey, green, yellow, primary, warning, legendColor, title, description } = props
+  const { info, grey, green, yellow, primary, warning, legendColor, title, description, dataChart } = props
+
+  const convertDynamicData = (data: Record<string, number>) => {
+    const filteredEntries = Object.entries(data).filter(([_, value]) => value > 0)
+
+    const labels = filteredEntries.map(([key]) => key)
+    const values = filteredEntries.map(([_, value]) => value)
+
+    return { labels, values }
+  }
+
+  const buildColors = (count: number) => {
+    const palette = [primary, info, warning, yellow, green, grey]
+    return Array.from({ length: count }, (_, i) => palette[i % palette.length])
+  }
+
+  const dynamic = convertDynamicData(dataChart)
+
+  const chartData: ChartData<'polarArea'> = {
+    labels: dynamic.labels,
+    datasets: [
+      {
+        borderWidth: 0,
+        data: dynamic.values,
+        backgroundColor: buildColors(dynamic.labels.length)
+      }
+    ]
+  }
 
   const options: ChartOptions<'polarArea'> = {
     responsive: true,
@@ -63,18 +86,6 @@ const ChartjsPolarAreaChart = (props: PolarAreaProps) => {
     }
   }
 
-  const data: ChartData<'polarArea'> = {
-    labels: ['Africa', 'Asia', 'Europe', 'America', 'Antarctica', 'Australia'],
-    datasets: [
-      {
-        borderWidth: 0,
-        label: 'Population (millions)',
-        data: [19, 17.5, 15, 13.5, 11, 9],
-        backgroundColor: [primary, yellow, warning, info, grey, green]
-      }
-    ]
-  }
-
   return (
     <Card>
       <CardHeader
@@ -87,7 +98,7 @@ const ChartjsPolarAreaChart = (props: PolarAreaProps) => {
         subheader={<Typography variant='caption'>{description}</Typography>}
       />
       <CardContent>
-        <PolarArea data={data} height={300} options={options} />
+        <PolarArea data={chartData} height={300} options={options} />
       </CardContent>
     </Card>
   )
