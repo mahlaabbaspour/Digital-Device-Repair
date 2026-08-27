@@ -22,7 +22,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
 
 export const metadata = {
-  title: 'سامانه خدمات پرستاری در منزل'
+  title: 'تعمیرات دیجیتال'
 
   // description: 'سیستم مدیریت انبار و کالا'
 }

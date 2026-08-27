@@ -51,25 +51,27 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
   const navAdmin = [
     {
       title: 'اطلاعات پایه',
-      icon: '/images/icons/menu/info.png',
+      icon: '/images/icons/menu/user-guide.png',
       children: [
         {
-          title: 'اعضای بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/MembersOfThePatientSafetyManagementVisit'
+          title: 'کالاها',
+          path: '/admin/product'
         },
         {
-          title: 'سوالات بازدید مدیریتی ایمنی بیمار',
-          path: '/admin/QuestionsForThePatientSafetyManagementVisit'
-        }
-      ]
-    },
-    {
-      title: 'جلسات',
-      icon: '/images/icons/menu/education.png',
-      children: [
+          title: 'خدمات',
+          path: '/admin/services'
+        },
         {
-          title: 'فهرست جلسات',
-          path: '/admin/Meetings'
+          title: 'کارشناسان',
+          path: '/admin/expert'
+        },
+        {
+          title: 'اپراتورها',
+          path: '/admin/operator'
+        },
+        {
+          title: 'مشتریان',
+          path: '/admin/customer'
         }
       ]
     }
