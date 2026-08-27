@@ -10,7 +10,7 @@ export function useCreateOperator() {
     mutationFn: createOperator,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['operator'] })
+      await queryClient.invalidateQueries({ queryKey: ['operator'] })
       toast.success('با موفقیت ایجاد شد')
     },
 
@@ -28,7 +28,7 @@ export function useCreateOperator() {
 
 export function useGetOperator(id: number | string | null) {
   return useQuery({
-    queryKey: ['expert', id],
+    queryKey: ['operator', id],
     queryFn: () => getOperator(id as number | string),
     enabled: id !== null
   })
@@ -41,7 +41,7 @@ export function useUpdateOperator() {
     mutationFn: updateOperator,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['operator'] })
+      await queryClient.invalidateQueries({ queryKey: ['operator'] })
       toast.success('با موفقیت ویرایش شد')
     },
 

@@ -10,7 +10,7 @@ export function useCreateCustomer() {
     mutationFn: createCustomer,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['customer'] })
+      await queryClient.invalidateQueries({ queryKey: ['customer'] })
       toast.success('با موفقیت ایجاد شد')
     },
 
@@ -28,7 +28,7 @@ export function useCreateCustomer() {
 
 export function useGetCustomer(id: number | string | null) {
   return useQuery({
-    queryKey: ['expert', id],
+    queryKey: ['customer', id],
     queryFn: () => getCustomer(id as number | string),
     enabled: id !== null
   })
@@ -41,7 +41,7 @@ export function useUpdateCustomer() {
     mutationFn: updateCustomer,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['customer'] })
+      await queryClient.invalidateQueries({ queryKey: ['customer'] })
       toast.success('با موفقیت ویرایش شد')
     },
 

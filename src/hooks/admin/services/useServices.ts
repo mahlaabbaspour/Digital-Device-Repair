@@ -10,7 +10,7 @@ export function useCreateServices() {
     mutationFn: createServices,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['service'] })
+      await queryClient.invalidateQueries({ queryKey: ['service'] })
       toast.success('با موفقیت ایجاد شد')
     },
 
@@ -28,7 +28,7 @@ export function useCreateServices() {
 
 export function useGetServices(id: number | string | null) {
   return useQuery({
-    queryKey: ['product', id],
+    queryKey: ['service', id],
     queryFn: () => getServices(id as number | string),
     enabled: id !== null
   })
@@ -41,7 +41,7 @@ export function useUpdateServices() {
     mutationFn: updateServices,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['service'] })
+      await queryClient.invalidateQueries({ queryKey: ['service'] })
       toast.success('با موفقیت ویرایش شد')
     },
 

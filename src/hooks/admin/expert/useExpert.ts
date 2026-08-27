@@ -10,7 +10,7 @@ export function useCreateExpert() {
     mutationFn: createExpert,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['expert'] })
+      await queryClient.invalidateQueries({ queryKey: ['expert'] })
       toast.success('با موفقیت ایجاد شد')
     },
 
@@ -41,7 +41,7 @@ export function useUpdateExpert() {
     mutationFn: updateExpert,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['expert'] })
+      await queryClient.invalidateQueries({ queryKey: ['expert'] })
       toast.success('با موفقیت ویرایش شد')
     },
 

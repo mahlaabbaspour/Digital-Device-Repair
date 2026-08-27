@@ -10,7 +10,7 @@ export function useCreateProduct() {
     mutationFn: createProduct,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['product'] })
+      await queryClient.invalidateQueries({ queryKey: ['product'] })
       toast.success('با موفقیت ایجاد شد')
     },
 
@@ -41,7 +41,7 @@ export function useUpdateProduct() {
     mutationFn: updateProduct,
 
     onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['product'] })
+      await queryClient.invalidateQueries({ queryKey: ['product'] })
       toast.success('با موفقیت ویرایش شد')
     },
 
