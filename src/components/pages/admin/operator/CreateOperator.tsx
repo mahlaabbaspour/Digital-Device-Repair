@@ -42,20 +42,20 @@ type Props = {
 type FormValue = {
   first_name: string
   last_name: string
-  national_code: number | null
-  mobile: number | null
+  national_code: string
+  mobile: string
   status: boolean
 }
 
 export default function OperatorCreate({ open, onClose }: Props) {
   const { mutateAsync: createOperator, isPending } = useCreateOperator()
 
-  const { control, handleSubmit, setError } = useForm<FormValue>({
+  const { control, handleSubmit, reset, setError } = useForm<FormValue>({
     defaultValues: {
       first_name: '',
       last_name: '',
-      national_code: null,
-      mobile: null,
+      national_code: '',
+      mobile: '',
       status: true
     }
   })
@@ -64,6 +64,7 @@ export default function OperatorCreate({ open, onClose }: Props) {
     try {
       await createOperator(data)
 
+      reset()
       onClose()
     } catch (error: any) {
       const backError = error?.response?.data?.errors

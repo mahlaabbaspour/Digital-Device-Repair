@@ -105,7 +105,7 @@ const InfoItem = ({ icon, label, value }: { icon: string; label: string; value: 
 export default function OperatorShow({ open, id, onClose }: Props) {
   const { data, isLoading, isError } = useGetOperator(id)
 
-  const expert = data?.data
+  const operator = data?.data
 
   return (
     <Dialog fullWidth maxWidth='md' open={open} onClose={onClose} TransitionComponent={Transition}>
@@ -231,16 +231,16 @@ export default function OperatorShow({ open, id, onClose }: Props) {
           </Box>
         )}
 
-        {expert && !isLoading && !isError && (
+        {operator && !isLoading && !isError && (
           <Box>
             <Box
               sx={{
                 mb: 5,
                 p: 3,
                 borderRadius: 2,
-                backgroundColor: expert.status ? 'success.lighter' : 'action.hover',
+                backgroundColor: operator.status ? 'success.lighter' : 'action.hover',
                 border: '1px solid',
-                borderColor: expert.status ? 'success.light' : 'error.light',
+                borderColor: operator.status ? 'success.light' : 'error.light',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between'
@@ -257,7 +257,7 @@ export default function OperatorShow({ open, id, onClose }: Props) {
 
                 <Box>
                   <Typography variant='body1' fontWeight={700}>
-                    {expert.name}
+                    {operator.first_name} {operator.last_name}
                   </Typography>
                 </Box>
               </Box>
@@ -265,10 +265,13 @@ export default function OperatorShow({ open, id, onClose }: Props) {
               <Chip
                 size='small'
                 icon={
-                  <Icon icon={expert.status ? 'mdi:check-circle-outline' : 'mdi:close-circle-outline'} fontSize={16} />
+                  <Icon
+                    icon={operator.status ? 'mdi:check-circle-outline' : 'mdi:close-circle-outline'}
+                    fontSize={16}
+                  />
                 }
-                label={expert.status ? 'فعال' : 'غیرفعال'}
-                color={expert.status ? 'success' : 'error'}
+                label={operator.status ? 'فعال' : 'غیرفعال'}
+                color={operator.status ? 'success' : 'error'}
                 sx={{
                   fontWeight: 600
                 }}
@@ -279,19 +282,19 @@ export default function OperatorShow({ open, id, onClose }: Props) {
 
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
-                <InfoItem icon='mdi:package-variant-closed' label='نام اپراتور' value={expert.first_name} />
+                <InfoItem icon='mdi:package-variant-closed' label='نام اپراتور' value={operator.first_name} />
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <InfoItem icon='mdi:tag-outline' label='نام خانوادگی' value={expert.last_name} />
+                <InfoItem icon='mdi:tag-outline' label='نام خانوادگی' value={operator.last_name} />
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <InfoItem icon='mdi:cash' label='کدملی' value={expert.national_code} />
+                <InfoItem icon='mdi:cash' label='کدملی' value={operator.national_code} />
               </Grid>
 
               <Grid item xs={12} md={6}>
-                <InfoItem icon='mdi:warehouse' label='موبایل' value={expert.mobile} />
+                <InfoItem icon='mdi:warehouse' label='موبایل' value={operator.mobile} />
               </Grid>
             </Grid>
           </Box>

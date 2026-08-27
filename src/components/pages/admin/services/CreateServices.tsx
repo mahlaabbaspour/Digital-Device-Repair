@@ -48,7 +48,7 @@ type FormValue = {
 export default function ServicesCreate({ open, onClose }: Props) {
   const { mutateAsync: createService, isPending } = useCreateServices()
 
-  const { control, handleSubmit, setError } = useForm<FormValue>({
+  const { control, handleSubmit, reset, setError } = useForm<FormValue>({
     defaultValues: {
       name: '',
       sale_price: null,
@@ -60,6 +60,7 @@ export default function ServicesCreate({ open, onClose }: Props) {
     try {
       await createService(data)
 
+      reset()
       onClose()
     } catch (error: any) {
       const backError = error?.response?.data?.errors
@@ -78,7 +79,7 @@ export default function ServicesCreate({ open, onClose }: Props) {
   return (
     <Dialog
       scroll='body'
-      maxWidth='md'
+      maxWidth='sm'
       fullWidth
       open={open}
       onClose={onClose}
@@ -135,7 +136,7 @@ export default function ServicesCreate({ open, onClose }: Props) {
         }}
       >
         <Grid container spacing={6}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Controller
               name='name'
               control={control}
@@ -152,7 +153,7 @@ export default function ServicesCreate({ open, onClose }: Props) {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Controller
               name='sale_price'
               control={control}

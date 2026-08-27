@@ -113,7 +113,7 @@ export default function ServicesShow({ open, id, onClose }: Props) {
       : '—'
 
   return (
-    <Dialog fullWidth maxWidth='md' open={open} onClose={onClose} TransitionComponent={Transition}>
+    <Dialog fullWidth maxWidth='sm' open={open} onClose={onClose} TransitionComponent={Transition}>
       <IconButton
         onClick={onClose}
         sx={{
@@ -286,11 +286,11 @@ export default function ServicesShow({ open, id, onClose }: Props) {
             <Divider sx={{ mb: 5 }} />
 
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={12}>
                 <InfoItem icon='mdi:package-variant-closed' label='نام خدمت' value={services.name} />
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={12}>
                 <InfoItem icon='mdi:cash' label='قیمت فروش' value={formattedPrice} />
               </Grid>
             </Grid>

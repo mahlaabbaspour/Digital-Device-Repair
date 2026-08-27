@@ -43,8 +43,8 @@ type Props = {
 type FormValue = {
   first_name: string
   last_name: string
-  national_code: number | null
-  mobile: number | null
+  national_code: string
+  mobile: string
   address: string
   status: boolean
 }
@@ -57,8 +57,8 @@ export default function CustomerEdit({ open, id, onClose }: Props) {
     defaultValues: {
       first_name: '',
       last_name: '',
-      national_code: null,
-      mobile: null,
+      national_code: '',
+      mobile: '',
       address: '',
       status: true
     }

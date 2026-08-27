@@ -257,7 +257,7 @@ export default function ExpertShow({ open, id, onClose }: Props) {
 
                 <Box>
                   <Typography variant='body1' fontWeight={700}>
-                    {expert.name}
+                    {expert.first_name} {expert.last_name}
                   </Typography>
                 </Box>
               </Box>

@@ -42,20 +42,20 @@ type Props = {
 type FormValue = {
   first_name: string
   last_name: string
-  national_code: number | null
-  mobile: number | null
+  national_code: string
+  mobile: string
   status: boolean
 }
 
 export default function ExpertCreate({ open, onClose }: Props) {
   const { mutateAsync: createExpert, isPending } = useCreateExpert()
 
-  const { control, handleSubmit, setError } = useForm<FormValue>({
+  const { control, handleSubmit, reset, setError } = useForm<FormValue>({
     defaultValues: {
       first_name: '',
       last_name: '',
-      national_code: null,
-      mobile: null,
+      national_code: '',
+      mobile: '',
       status: true
     }
   })
@@ -64,6 +64,7 @@ export default function ExpertCreate({ open, onClose }: Props) {
     try {
       await createExpert(data)
 
+      reset()
       onClose()
     } catch (error: any) {
       const backError = error?.response?.data?.errors
@@ -198,7 +199,7 @@ export default function ExpertCreate({ open, onClose }: Props) {
                 <TextField
                   {...field}
                   label='موبایل'
-                  placeholder='مثال: 0123456789'
+                  placeholder='مثال: 09153456789'
                   fullWidth
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message}

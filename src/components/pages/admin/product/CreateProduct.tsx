@@ -50,7 +50,7 @@ type FormValue = {
 export default function ProductCreate({ open, onClose }: Props) {
   const { mutateAsync: createProduct, isPending } = useCreateProduct()
 
-  const { control, handleSubmit, setError } = useForm<FormValue>({
+  const { control, handleSubmit, reset, setError } = useForm<FormValue>({
     defaultValues: {
       name: '',
       brand: '',
@@ -64,6 +64,7 @@ export default function ProductCreate({ open, onClose }: Props) {
     try {
       await createProduct(data)
 
+      reset()
       onClose()
     } catch (error: any) {
       const backError = error?.response?.data?.errors

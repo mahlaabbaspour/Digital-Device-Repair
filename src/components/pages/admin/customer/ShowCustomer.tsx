@@ -257,7 +257,7 @@ export default function CustomerShow({ open, id, onClose }: Props) {
 
                 <Box>
                   <Typography variant='body1' fontWeight={700}>
-                    {customer.name}
+                    {customer.first_name} {customer.last_name}
                   </Typography>
                 </Box>
               </Box>

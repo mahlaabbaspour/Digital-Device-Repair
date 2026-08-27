@@ -95,7 +95,7 @@ export default function ServicesEdit({ open, id, onClose }: Props) {
   return (
     <Dialog
       scroll='body'
-      maxWidth='md'
+      maxWidth='sm'
       fullWidth
       open={open}
       onClose={onClose}
@@ -152,7 +152,7 @@ export default function ServicesEdit({ open, id, onClose }: Props) {
         }}
       >
         <Grid container spacing={6}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Controller
               name='name'
               control={control}
@@ -169,7 +169,7 @@ export default function ServicesEdit({ open, id, onClose }: Props) {
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={12}>
             <Controller
               name='sale_price'
               control={control}
