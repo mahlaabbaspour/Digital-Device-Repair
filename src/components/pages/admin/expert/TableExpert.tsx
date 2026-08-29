@@ -86,7 +86,10 @@ export default function ExpertTable() {
         queryKey='expert'
         baseUrl='/expert'
         dataStruct={dataStruct}
-        filterOptions={{}}
+        sortConfig={{
+          columnParam: 'order_by',
+          directionParam: 'order'
+        }}
         btnOperation={{
           status: () => true,
           delete: () => true,

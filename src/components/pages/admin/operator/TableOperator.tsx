@@ -86,7 +86,10 @@ export default function OperatorTable() {
         queryKey='operator'
         baseUrl='/operator'
         dataStruct={dataStruct}
-        filterOptions={{}}
+        sortConfig={{
+          columnParam: 'order_by',
+          directionParam: 'order'
+        }}
         btnOperation={{
           status: () => true,
           delete: () => true,

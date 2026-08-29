@@ -7,6 +7,7 @@ import type { FadeProps } from '@mui/material/Fade'
 import Fade from '@mui/material/Fade'
 
 import {
+  alpha,
   Box,
   Chip,
   Dialog,
@@ -122,12 +123,12 @@ export default function ExpertShow({ open, id, onClose }: Props) {
       </IconButton>
 
       <Box
-        sx={{
+        sx={theme => ({
           px: { xs: 5, sm: 8 },
           pt: 5,
           pb: 4,
-          backgroundColor: 'background.default'
-        }}
+          backgroundColor: alpha(theme.palette.primary.main, 0.08)
+        })}
       >
         <Box
           sx={{

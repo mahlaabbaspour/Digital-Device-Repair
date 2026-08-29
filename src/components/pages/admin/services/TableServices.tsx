@@ -84,7 +84,10 @@ export default function ServicesTable() {
         queryKey='service'
         baseUrl='/service'
         dataStruct={dataStruct}
-        filterOptions={{}}
+        sortConfig={{
+          columnParam: 'order_by',
+          directionParam: 'order'
+        }}
         btnOperation={{
           status: () => true,
           delete: () => true,
