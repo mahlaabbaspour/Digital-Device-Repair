@@ -74,6 +74,16 @@ const VerticalMenu = ({ scrollMenu }: Props) => {
           path: '/admin/customer'
         }
       ]
+    },
+    {
+      title: 'تعمیرات دیجیتال',
+      icon: '/images/icons/menu/vending-machine.png',
+      children: [
+        {
+          title: 'تعمیرات',
+          path: '/admin/repairs'
+        }
+      ]
     }
   ]
 
