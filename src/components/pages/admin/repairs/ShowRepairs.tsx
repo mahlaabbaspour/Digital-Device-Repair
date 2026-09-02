@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 
-import { Avatar, Box, Chip, Card, CardContent, Divider, Grid, IconButton, Typography } from '@mui/material'
+import { alpha, Avatar, Box, Chip, Card, CardContent, Divider, Grid, IconButton, Typography } from '@mui/material'
 
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
 import DevicesOtherOutlinedIcon from '@mui/icons-material/DevicesOtherOutlined'
@@ -89,7 +89,6 @@ export default function RepairsShow() {
   const { data: upsertResponse, isLoading: upsertLoading } = useGetRepairsUpsertData()
 
   const repair = repairResponse?.data ?? repairResponse
-
   const upsertData = upsertResponse?.data ?? upsertResponse
 
   const statusCodes = upsertData?.status_codes ?? []
@@ -115,28 +114,7 @@ export default function RepairsShow() {
     }
   }
 
-  const getStatusBorderColor = (statusId?: number) => {
-    switch (statusId) {
-      case 1:
-        return 'primary.main'
-
-      case 2:
-        return 'warning.main'
-
-      case 3:
-        return 'success.main'
-
-      case 4:
-        return 'error.main'
-
-      default:
-        return 'divider'
-    }
-  }
-
   const statusColor = getStatusColor(currentStatus?.id)
-
-  const statusBorderColor = getStatusBorderColor(currentStatus?.id)
 
   const formatPrice = (price: number | string | null | undefined) => {
     if (price === null || price === undefined || price === '') {
@@ -188,7 +166,6 @@ export default function RepairsShow() {
       <Breadcrumb items={items} />
 
       <Card>
-        {/* Header */}
         <Box
           sx={{
             position: 'relative',
@@ -249,30 +226,73 @@ export default function RepairsShow() {
         <Divider />
 
         <CardContent>
+          {/* Summary */}
           <Box
-            sx={{
+            sx={theme => ({
               mb: 5,
               p: 4,
               borderRadius: 2,
+
               border: '1px solid',
-              borderColor: statusBorderColor,
-              backgroundColor: 'background.paper',
+
+              borderColor:
+                statusColor === 'primary'
+                  ? alpha(theme.palette.primary.main, 0.35)
+                  : statusColor === 'warning'
+                    ? alpha(theme.palette.warning.main, 0.35)
+                    : statusColor === 'success'
+                      ? alpha(theme.palette.success.main, 0.35)
+                      : statusColor === 'error'
+                        ? alpha(theme.palette.error.main, 0.35)
+                        : theme.palette.divider,
+
+              backgroundColor:
+                statusColor === 'primary'
+                  ? alpha(theme.palette.primary.main, 0.06)
+                  : statusColor === 'warning'
+                    ? alpha(theme.palette.warning.main, 0.06)
+                    : statusColor === 'success'
+                      ? alpha(theme.palette.success.main, 0.06)
+                      : statusColor === 'error'
+                        ? alpha(theme.palette.error.main, 0.06)
+                        : theme.palette.background.paper,
+
               display: 'flex',
               alignItems: 'center',
               gap: 3,
               flexWrap: 'wrap',
-              transition: 'border-color 0.2s ease'
-            }}
+              transition: 'all 0.2s ease'
+            })}
           >
             <Avatar
               variant='rounded'
-              sx={{
+              sx={theme => ({
                 width: 90,
                 height: 90,
                 borderRadius: 2,
-                backgroundColor: 'primary.main',
-                color: 'common.white'
-              }}
+
+                backgroundColor:
+                  statusColor === 'primary'
+                    ? alpha(theme.palette.primary.main, 0.15)
+                    : statusColor === 'warning'
+                      ? alpha(theme.palette.warning.main, 0.15)
+                      : statusColor === 'success'
+                        ? alpha(theme.palette.success.main, 0.15)
+                        : statusColor === 'error'
+                          ? alpha(theme.palette.error.main, 0.15)
+                          : alpha(theme.palette.text.primary, 0.08),
+
+                color:
+                  statusColor === 'primary'
+                    ? 'primary.main'
+                    : statusColor === 'warning'
+                      ? 'warning.main'
+                      : statusColor === 'success'
+                        ? 'success.main'
+                        : statusColor === 'error'
+                          ? 'error.main'
+                          : 'text.secondary'
+              })}
             >
               <DevicesOtherOutlinedIcon fontSize='large' />
             </Avatar>

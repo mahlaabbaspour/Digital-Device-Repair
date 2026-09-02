@@ -24,9 +24,11 @@ import DevicesOtherOutlinedIcon from '@mui/icons-material/DevicesOtherOutlined'
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 
 import Breadcrumb from '@/components/Breadcrumb'
-import { useGetRepairsUpsertData } from '@/hooks/admin/upsertData/useUpsertData'
 import CustomDateTimePicker from '@/components/CustomDateTimePicker'
+
+import { useGetRepairsUpsertData } from '@/hooks/admin/upsertData/useUpsertData'
 import { useGetRepairs, useUpdateRepairs } from '@/hooks/admin/repairs/useRepairs'
+import RepairItemsTable from '../repairItems/TableRepairItems'
 
 type FormValue = {
   device_type: string | null
@@ -437,116 +439,6 @@ export default function RepairsEdit() {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name='total_amount'
-                  control={control}
-                  render={({ field, fieldState }) => {
-                    const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
-
-                    return (
-                      <TextField
-                        {...field}
-                        value={formattedValue}
-                        type='text'
-                        label='مبلغ کل'
-                        fullWidth
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        onChange={e => {
-                          const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
-
-                          field.onChange(inputValue === '' ? null : Number(inputValue))
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: (
-                              <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
-                                تومان
-                              </Typography>
-                            )
-                          }
-                        }}
-                      />
-                    )
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name='discount_amount'
-                  control={control}
-                  render={({ field, fieldState }) => {
-                    const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
-
-                    return (
-                      <TextField
-                        {...field}
-                        value={formattedValue}
-                        type='text'
-                        label='مبلغ تخفیف'
-                        placeholder='مبلغ تخفیف را وارد کنید'
-                        fullWidth
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        onChange={e => {
-                          const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
-
-                          field.onChange(inputValue === '' ? null : Number(inputValue))
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: (
-                              <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
-                                تومان
-                              </Typography>
-                            )
-                          }
-                        }}
-                      />
-                    )
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <Controller
-                  name='payable_amount'
-                  control={control}
-                  render={({ field, fieldState }) => {
-                    const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
-
-                    return (
-                      <TextField
-                        {...field}
-                        value={formattedValue}
-                        type='text'
-                        label='مبلغ قابل پرداخت'
-                        placeholder='مبلغ قابل پرداخت را وارد کنید'
-                        fullWidth
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                        onChange={e => {
-                          const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
-
-                          field.onChange(inputValue === '' ? null : Number(inputValue))
-                        }}
-                        slotProps={{
-                          input: {
-                            endAdornment: (
-                              <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
-                                تومان
-                              </Typography>
-                            )
-                          }
-                        }}
-                      />
-                    )
-                  }}
-                />
-              </Grid>
-
               <Grid item xs={12} md={12}>
                 <Controller
                   name='customer_description'
@@ -565,24 +457,144 @@ export default function RepairsEdit() {
                   )}
                 />
               </Grid>
-
-              <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                <Button color='inherit' variant='outlined' type='button' onClick={() => router.push('/admin/repairs')}>
-                  انصراف
-                </Button>
-
-                <Button
-                  startIcon={<SaveOutlinedIcon />}
-                  variant='contained'
-                  color='primary'
-                  type='submit'
-                  disabled={isPending}
-                >
-                  {isPending ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
-                </Button>
-              </Grid>
             </Grid>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card sx={{ mt: 4 }}>
+        <RepairItemsTable repairId={Number(id)} />
+      </Card>
+
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Grid container spacing={6}>
+            <Grid item xs={12} md={4}>
+              <Controller
+                name='total_amount'
+                control={control}
+                render={({ field, fieldState }) => {
+                  const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
+
+                  return (
+                    <TextField
+                      {...field}
+                      value={formattedValue}
+                      type='text'
+                      label='مبلغ کل'
+                      fullWidth
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      onChange={e => {
+                        const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
+
+                        field.onChange(inputValue === '' ? null : Number(inputValue))
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                              تومان
+                            </Typography>
+                          )
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Controller
+                name='discount_amount'
+                control={control}
+                render={({ field, fieldState }) => {
+                  const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
+
+                  return (
+                    <TextField
+                      {...field}
+                      value={formattedValue}
+                      type='text'
+                      label='مبلغ تخفیف'
+                      placeholder='مبلغ تخفیف را وارد کنید'
+                      fullWidth
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      onChange={e => {
+                        const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
+
+                        field.onChange(inputValue === '' ? null : Number(inputValue))
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                              تومان
+                            </Typography>
+                          )
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Controller
+                name='payable_amount'
+                control={control}
+                render={({ field, fieldState }) => {
+                  const formattedValue = field.value !== null ? Number(field.value).toLocaleString('en-US') : ''
+
+                  return (
+                    <TextField
+                      {...field}
+                      value={formattedValue}
+                      type='text'
+                      label='مبلغ قابل پرداخت'
+                      placeholder='مبلغ قابل پرداخت را وارد کنید'
+                      fullWidth
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      onChange={e => {
+                        const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
+
+                        field.onChange(inputValue === '' ? null : Number(inputValue))
+                      }}
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                              تومان
+                            </Typography>
+                          )
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+              <Button color='inherit' variant='outlined' type='button' onClick={() => router.push('/admin/repairs')}>
+                انصراف
+              </Button>
+
+              <Button
+                startIcon={<SaveOutlinedIcon />}
+                variant='contained'
+                color='primary'
+                type='submit'
+                disabled={isPending}
+              >
+                {isPending ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
+              </Button>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
     </>

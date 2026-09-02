@@ -41,12 +41,11 @@ export default function RepairsTable() {
   const dataStruct = {
     rowId: ['id'],
 
-    title: ['نام دستگاه', 'نام مشتری', 'مبلغ کل', 'وضعیت'],
+    title: ['نام دستگاه', 'نام مشتری', 'وضعیت'],
 
-    name: [['name'], ['customer_code'], ['total_amount'], ['status_code']],
+    name: [['name'], ['customer_code'], ['status_code']],
 
     customCol: [
-      null,
       null,
       null,
       (value: any[]) => {
@@ -77,11 +76,11 @@ export default function RepairsTable() {
       }
     ],
 
-    align: ['center', 'center', 'center', 'center'],
+    align: ['center', 'center', 'center'],
 
-    width: ['25%', '25%', '25%', '25%'],
+    width: ['25%', '25%', '25%'],
 
-    sort: ['name', 'customer', 'total_amount', 'status_code'],
+    sort: ['name', 'customer', 'status_code'],
 
     filter: [null, null, null, null]
   }
