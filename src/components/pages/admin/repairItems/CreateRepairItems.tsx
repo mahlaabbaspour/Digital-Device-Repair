@@ -2,7 +2,7 @@
 
 import type { ReactElement, Ref } from 'react'
 
-import { forwardRef, useEffect } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
 
@@ -37,6 +37,7 @@ import { useCreateRepairItems } from '@/hooks/admin/repairItems/useRepairItems'
 
 import SwitchesBasic from '@/components/SwitchBasic'
 import { useGetRepairItemUpsertData } from '@/hooks/admin/upsertData/useUpsertData'
+import CustomAsyncAutocomplete from '@/components/elements/CustomAsyncAutocomplete'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -69,19 +70,9 @@ type Expert = {
   last_name: string
 }
 
-type Item = {
-  id: number
-  name: string
-}
-
-const items: Item[] = [
-  { id: 1, name: 'باتری' },
-  { id: 2, name: 'صفحه نمایش' },
-  { id: 3, name: 'شارژر' },
-  { id: 4, name: 'قاب' }
-]
-
 export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
+  const [selectedName, setSelectedName] = useState<any>(null)
+
   const { mutateAsync: createRepairItems, isPending } = useCreateRepairItems()
   const { data: upsertData, isLoading } = useGetRepairItemUpsertData(repairId)
 
@@ -102,6 +93,10 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
   const selectedType = watch('type')
   const quantity = watch('quantity')
   const amount = watch('unit_price')
+
+  // const nameOptions = selectedType === 'product' ? fakeProducts : fakeServices
+
+  const nameUrl = selectedType === 'product' ? '/items?type=1' : selectedType === 'service' ? '/items?type=2' : ''
 
   const totalAmount = quantity !== null && amount !== null ? quantity * amount : null
 
@@ -248,22 +243,17 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
               name='name'
               control={control}
               render={({ field, fieldState }) => (
-                <Autocomplete
-                  options={items}
-                  getOptionLabel={option => option.name}
-                  value={items.find(item => item.id === field.value) || null}
-                  onChange={(_, newValue) => {
+                <CustomAsyncAutocomplete
+                  url={nameUrl}
+                  label='نام'
+                  placeholder='انتخاب کنید'
+                  value={selectedName}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  onAddValue={newValue => {
+                    setSelectedName(newValue)
                     field.onChange(newValue?.id ?? null)
                   }}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label='نام'
-                      placeholder='انتخاب کنید'
-                      error={!!fieldState.error}
-                      helperText={fieldState.error?.message}
-                    />
-                  )}
                 />
               )}
             />
