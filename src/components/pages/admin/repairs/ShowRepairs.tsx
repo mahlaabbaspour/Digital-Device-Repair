@@ -2,7 +2,19 @@
 
 import { useParams, useRouter } from 'next/navigation'
 
-import { alpha, Avatar, Box, Chip, Card, CardContent, Divider, Grid, IconButton, Typography } from '@mui/material'
+import {
+  alpha,
+  Avatar,
+  Box,
+  Chip,
+  Card,
+  CardContent,
+  Divider,
+  Grid,
+  IconButton,
+  Typography,
+  CardActions
+} from '@mui/material'
 
 import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
 import DevicesOtherOutlinedIcon from '@mui/icons-material/DevicesOtherOutlined'
@@ -16,6 +28,8 @@ import Breadcrumb from '@/components/Breadcrumb'
 
 import { useGetRepairs } from '@/hooks/admin/repairs/useRepairs'
 import { useGetRepairsUpsertData } from '@/hooks/admin/upsertData/useUpsertData'
+
+import RepairItemsTable from '../repairItems/TableRepairItems'
 
 const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => (
   <Box
@@ -80,6 +94,7 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
 
 export default function RepairsShow() {
   const router = useRouter()
+
   const { id } = useParams()
 
   const repairId = Number(id)
@@ -89,6 +104,7 @@ export default function RepairsShow() {
   const { data: upsertResponse, isLoading: upsertLoading } = useGetRepairsUpsertData()
 
   const repair = repairResponse?.data ?? repairResponse
+
   const upsertData = upsertResponse?.data ?? upsertResponse
 
   const statusCodes = upsertData?.status_codes ?? []
@@ -127,7 +143,8 @@ export default function RepairsShow() {
   if (repairLoading || upsertLoading) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' minHeight={400}>
-        <Typography>در حال دریافت اطلاعات تعمیر...</Typography>
+        {' '}
+        <Typography>در حال دریافت اطلاعات تعمیر... </Typography>{' '}
       </Box>
     )
   }
@@ -142,7 +159,8 @@ export default function RepairsShow() {
           minHeight: 400
         }}
       >
-        <Typography>اطلاعات تعمیر پیدا نشد.</Typography>
+        {' '}
+        <Typography>اطلاعات تعمیر پیدا نشد. </Typography>{' '}
       </Box>
     )
   }
@@ -164,7 +182,6 @@ export default function RepairsShow() {
   return (
     <>
       <Breadcrumb items={items} />
-
       <Card>
         <Box
           sx={{
@@ -226,15 +243,12 @@ export default function RepairsShow() {
         <Divider />
 
         <CardContent>
-          {/* Summary */}
           <Box
             sx={theme => ({
               mb: 5,
               p: 4,
               borderRadius: 2,
-
               border: '1px solid',
-
               borderColor:
                 statusColor === 'primary'
                   ? alpha(theme.palette.primary.main, 0.35)
@@ -375,34 +389,10 @@ export default function RepairsShow() {
               </Grid>
 
               <Grid item xs={12} md={4}>
-                <InfoItem icon={<AccessTimeOutlinedIcon fontSize='small' />} label='وضعیت' value={repair.status_code} />
-              </Grid>
-            </Grid>
-          </Box>
-
-          <Box sx={{ mt: 5 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
                 <InfoItem
-                  icon={<PaymentsOutlinedIcon fontSize='small' />}
-                  label='مبلغ کل'
-                  value={formatPrice(repair.total_amount)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <InfoItem
-                  icon={<PaymentsOutlinedIcon fontSize='small' />}
-                  label='مبلغ تخفیف'
-                  value={formatPrice(repair.discount_amount)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <InfoItem
-                  icon={<PaymentsOutlinedIcon fontSize='small' />}
-                  label='مبلغ قابل پرداخت'
-                  value={formatPrice(repair.payable_amount)}
+                  icon={<AccessTimeOutlinedIcon fontSize='small' />}
+                  label='زمان تحویل'
+                  value={repair.delivery_at || '—'}
                 />
               </Grid>
             </Grid>
@@ -462,7 +452,47 @@ export default function RepairsShow() {
               </Box>
             </Box>
           </Box>
+        </CardContent>
+      </Card>
 
+      <Card sx={{ mt: 4 }}>
+        <RepairItemsTable repairId={repairId} readOnly />
+      </Card>
+
+      <Card sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant='h6' fontWeight={700} sx={{ mb: 4 }}>
+            مبالغ تعمیر
+          </Typography>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <InfoItem
+                icon={<PaymentsOutlinedIcon fontSize='small' />}
+                label='مبلغ کل'
+                value={formatPrice(repair.total_amount)}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <InfoItem
+                icon={<PaymentsOutlinedIcon fontSize='small' />}
+                label='مبلغ تخفیف'
+                value={formatPrice(repair.discount_amount)}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <InfoItem
+                icon={<PaymentsOutlinedIcon fontSize='small' />}
+                label='مبلغ قابل پرداخت'
+                value={formatPrice(repair.payable_amount)}
+              />
+            </Grid>
+          </Grid>
+        </CardContent>
+
+        <CardActions>
           <Box
             sx={{
               mt: 5,
@@ -481,7 +511,7 @@ export default function RepairsShow() {
               <ArrowForwardOutlinedIcon />
             </IconButton>
           </Box>
-        </CardContent>
+        </CardActions>
       </Card>
     </>
   )

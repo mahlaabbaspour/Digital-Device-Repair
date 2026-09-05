@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { BiPlus } from 'react-icons/bi'
 
-import { Button, Chip } from '@mui/material'
+import { Button } from '@mui/material'
 
 import CustomTable from '@/components/CustomTable'
 
@@ -12,20 +12,34 @@ import RepairItemsCreate from './CreateRepairItems'
 import RepairItemsShow from './ShowRepairItems'
 import RepairItemsEdit from './EditRepairItems'
 
+import { useGetRepairItemsList } from '@/hooks/admin/repairItems/useRepairItems'
+
 type RepairItemsTableProps = {
   repairId: number
+  onTotalChange?: (total: number) => void
+  readOnly?: boolean
 }
 
-export default function RepairItemsTable({ repairId }: RepairItemsTableProps) {
+export default function RepairItemsTable({ repairId, onTotalChange, readOnly = false }: RepairItemsTableProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [editId, setEditId] = useState<number | null>(null)
   const [showId, setShowId] = useState<number | null>(null)
 
-  console.log('repairId:', repairId)
+  const { data: repairItemsData } = useGetRepairItemsList(repairId)
+
+  useEffect(() => {
+    const items = repairItemsData?.data ?? []
+
+    const total = items.reduce((sum: number, item: any) => {
+      return sum + Number(item.total_price ?? 0)
+    }, 0)
+
+    onTotalChange?.(total)
+  }, [repairItemsData, onTotalChange])
 
   const cardHeader = {
     status: true,
-    btn: (
+    btn: !readOnly ? (
       <Button
         variant='contained'
         startIcon={<BiPlus />}
@@ -36,35 +50,25 @@ export default function RepairItemsTable({ repairId }: RepairItemsTableProps) {
       >
         ایجاد
       </Button>
-    ),
+    ) : null,
     placeholderSearch: null
   }
 
   const dataStruct = {
     rowId: ['id'],
-    title: ['نوع', 'نام', 'تعداد', 'کارشناس', 'وضعیت'],
-    name: [['type'], ['name'], ['quantity'], ['expert'], ['status']],
+    title: ['نوع', 'نام', 'تعداد', 'فی واحد', 'جمع', 'کارشناس'],
+    name: [['repair_id'], ['name'], ['quantity'], ['unit_price'], ['total_price'], ['expert']],
     customCol: [
       null,
       null,
       null,
-      null,
-      (value: any[]) => {
-        const status = value[0]
-
-        return (
-          <Chip
-            label={status ? 'فعال' : 'غیرفعال'}
-            color={status ? 'success' : 'error'}
-            size='small'
-            variant='outlined'
-          />
-        )
-      }
+      (value: number) => Number(value).toLocaleString('en-US'),
+      (value: number) => Number(value).toLocaleString('en-US'),
+      null
     ],
-    align: ['center', 'center', 'center', 'center', 'center'],
-    width: ['20%', '20%', '20%', '20%', '20%'],
-    sort: ['type', 'name', 'quantity', 'expert', 'status'],
+    align: ['center', 'center', 'center', 'center', 'center', 'center'],
+    width: ['10%', '20%', '10%', '20%', '20%', '20%'],
+    sort: ['repair_id', 'name', 'quantity', 'unit_price', 'total_price', 'expert'],
     filter: [null, null, null, null, null]
   }
 
@@ -75,7 +79,7 @@ export default function RepairItemsTable({ repairId }: RepairItemsTableProps) {
           title: 'کالا ها و خدمات تعمیر',
           description: 'اطلاعات ثبت شده کالاها و خدمات'
         }}
-        checkboxEnabled={true}
+        checkboxEnabled={!readOnly}
         cardHeader={cardHeader}
         queryKey='repair-items'
         baseUrl={`/repair/${repairId}/repair-item`}
@@ -86,30 +90,38 @@ export default function RepairItemsTable({ repairId }: RepairItemsTableProps) {
         }}
         btnOperation={{
           status: () => true,
-          delete: () => true,
-          edit: () => true,
+          delete: () => !readOnly,
+          edit: () => !readOnly,
           show: () => true,
+
           onShow: (row: any) => {
             setShowId(row.id)
           },
+
           onEdit: (row: any) => {
-            setEditId(row.id)
+            if (!readOnly) {
+              setEditId(row.id)
+            }
           }
         }}
       />
 
-      <RepairItemsCreate
-        open={open}
-        repairId={repairId}
-        onClose={() => {
-          setOpen(false)
-          setEditId(null)
-        }}
-      />
+      {!readOnly && (
+        <RepairItemsCreate
+          open={open}
+          repairId={repairId}
+          onClose={() => {
+            setOpen(false)
+            setEditId(null)
+          }}
+        />
+      )}
 
       <RepairItemsShow open={!!showId} repairId={repairId} repairItemId={showId} onClose={() => setShowId(null)} />
 
-      <RepairItemsEdit open={!!editId} repairId={repairId} repairItemId={editId} onClose={() => setEditId(null)} />
+      {!readOnly && (
+        <RepairItemsEdit open={!!editId} repairId={repairId} repairItemId={editId} onClose={() => setEditId(null)} />
+      )}
     </>
   )
 }

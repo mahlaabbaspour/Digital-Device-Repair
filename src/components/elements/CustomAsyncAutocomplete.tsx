@@ -47,6 +47,29 @@ export default function CustomAsyncAutocomplete({
     setLoading(false)
   }, [url, inputValue])
 
+  const selectedOption =
+    !multiple && value !== null && value !== undefined
+      ? options.find(option => Number(option.id) === Number(value))
+      : null
+
+  useEffect(() => {
+    if (multiple || value === null || value === undefined || value === '' || disabled || readOnly) return
+
+    const loadSelectedOption = async () => {
+      setLoading(true)
+
+      try {
+        const data = await fetchOptionsSelect(url, '')
+
+        setOptions(data)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSelectedOption()
+  }, [value, url, multiple, disabled, readOnly])
+
   useEffect(() => {
     if (!open || disabled || readOnly) return
 
@@ -71,7 +94,7 @@ export default function CustomAsyncAutocomplete({
       readOnly={readOnly}
       disableCloseOnSelect={Boolean(multiple)}
       disabled={disabled}
-      value={value ?? (multiple ? [] : null)}
+      value={multiple ? (value ?? []) : (selectedOption ?? (typeof value === 'object' ? value : null))}
       options={options}
       loading={loading}
       inputValue={inputValue}

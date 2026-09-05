@@ -54,7 +54,7 @@ type Props = {
 
 type FormValue = {
   type: string
-  name: number | null
+  item_id: number | null
   serial: string
   expert_id: number | null
   quantity: number | null
@@ -78,8 +78,8 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
 
   const { control, handleSubmit, reset, setError, setValue, watch } = useForm<FormValue>({
     defaultValues: {
-      type: '',
-      name: null,
+      type: 'product',
+      item_id: null,
       serial: '',
       expert_id: null,
       quantity: null,
@@ -94,22 +94,30 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
   const quantity = watch('quantity')
   const amount = watch('unit_price')
 
-  // const nameOptions = selectedType === 'product' ? fakeProducts : fakeServices
-
-  const nameUrl = selectedType === 'product' ? '/items?type=1' : selectedType === 'service' ? '/items?type=2' : ''
+  const nameUrl =
+    selectedType === 'product'
+      ? `/repair/${repairId}/repair-item/product-service?type=1`
+      : selectedType === 'service'
+        ? `/repair/${repairId}/repair-item/product-service?type=2`
+        : ''
 
   const totalAmount = quantity !== null && amount !== null ? quantity * amount : null
 
-  const onSubmit = async (data: FormValue) => {
+  const onSubmit = async (values: FormValue) => {
     try {
-      const payload = {
-        ...data,
-        total_price: data.quantity !== null && data.unit_price !== null ? data.quantity * data.unit_price : null
+      const result = {
+        ...values,
+
+        type: values.type === 'product' ? 1 : 2,
+
+        item_id: values.item_id !== null ? Number(values.item_id) : null,
+
+        total_price: values.quantity !== null && values.unit_price !== null ? values.quantity * values.unit_price : null
       }
 
       await createRepairItems({
         repairId,
-        payload
+        payload: result
       })
 
       reset()
@@ -135,6 +143,11 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
   }, [open, reset])
 
   useEffect(() => {
+    if (selectedType) {
+      setSelectedName(null)
+      setValue('item_id', null)
+    }
+
     if (selectedType === 'service') {
       setValue('serial', '')
     }
@@ -238,25 +251,32 @@ export default function RepairItemsCreate({ open, onClose, repairId }: Props) {
               />
             </Grid>
           )}
+
           <Grid item md={12}>
-            <Controller
-              name='name'
-              control={control}
-              render={({ field, fieldState }) => (
-                <CustomAsyncAutocomplete
-                  url={nameUrl}
-                  label='نام'
-                  placeholder='انتخاب کنید'
-                  value={selectedName}
-                  error={!!fieldState.error}
-                  helperText={fieldState.error?.message}
-                  onAddValue={newValue => {
-                    setSelectedName(newValue)
-                    field.onChange(newValue?.id ?? null)
-                  }}
-                />
-              )}
-            />
+            {selectedType ? (
+              <Controller
+                name='item_id'
+                control={control}
+                render={({ field: { value, onChange }, fieldState }) => (
+                  <CustomAsyncAutocomplete
+                    url={nameUrl}
+                    label='نام'
+                    placeholder='انتخاب کنید'
+                    value={value}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    onChange={newValue => {
+                      onChange(newValue?.id ?? newValue ?? null)
+                    }}
+                    onAddValue={newValue => {
+                      onChange(newValue?.id ?? newValue ?? null)
+                    }}
+                  />
+                )}
+              />
+            ) : (
+              <TextField label='نام' placeholder='ابتدا نوع را انتخاب کنید' fullWidth disabled />
+            )}
           </Grid>
 
           <Grid item md={6}>

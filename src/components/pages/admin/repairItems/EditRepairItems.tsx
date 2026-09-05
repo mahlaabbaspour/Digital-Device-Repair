@@ -1,7 +1,8 @@
 'use client'
 
 import type { ReactElement, Ref } from 'react'
-import { forwardRef, useEffect } from 'react'
+
+import { forwardRef, useEffect, useState } from 'react'
 
 import { Controller, useForm } from 'react-hook-form'
 
@@ -33,6 +34,7 @@ import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined'
 import { useGetRepairItems, useUpdateRepairItems } from '@/hooks/admin/repairItems/useRepairItems'
 import SwitchesBasic from '@/components/SwitchBasic'
 import { useGetRepairItemUpsertData } from '@/hooks/admin/upsertData/useUpsertData'
+import CustomAsyncAutocomplete from '@/components/elements/CustomAsyncAutocomplete'
 
 const Transition = forwardRef(function Transition(
   props: FadeProps & { children?: ReactElement<any, any> },
@@ -50,7 +52,7 @@ type Props = {
 
 type FormValue = {
   type: string
-  name: number | null
+  item_id: number | null
   serial: string
   expert_id: number | null
   quantity: number | null
@@ -66,27 +68,24 @@ type Expert = {
   last_name: string
 }
 
-type Item = {
-  id: number
-  name: string
-}
-
-const items: Item[] = [
-  { id: 1, name: 'باتری' },
-  { id: 2, name: 'صفحه نمایش' },
-  { id: 3, name: 'شارژر' },
-  { id: 4, name: 'قاب' }
-]
+const emptyExperts: Expert[] = []
 
 export default function RepairItemsEdit({ open, onClose, repairId, repairItemId }: Props) {
+  const [selectedName, setSelectedName] = useState<any>(null)
+
   const { mutateAsync: updateRepairItems, isPending } = useUpdateRepairItems()
-  const { data: repairItemData } = useGetRepairItems({ repairId, repairItemId })
+
+  const { data: repairItemData } = useGetRepairItems({
+    repairId,
+    repairItemId
+  })
+
   const { data: upsertData, isLoading } = useGetRepairItemUpsertData(Number(repairId))
 
   const { control, handleSubmit, reset, setError, setValue, watch } = useForm<FormValue>({
     defaultValues: {
       type: '',
-      name: null,
+      item_id: null,
       serial: '',
       expert_id: null,
       quantity: null,
@@ -103,13 +102,24 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
 
   const totalAmount = quantity !== null && amount !== null ? quantity * amount : null
 
+  const experts: Expert[] = upsertData?.data ?? emptyExperts
+
+  const nameUrl =
+    selectedType === 'product'
+      ? `/repair/${repairId}/repair-item/product-service?type=1`
+      : selectedType === 'service'
+        ? `/repair/${repairId}/repair-item/product-service?type=2`
+        : ''
+
   const onSubmit = async (data: FormValue) => {
     if (repairItemId === null) return
 
     try {
       const payload = {
         ...data,
-        total_amount: data.quantity !== null && data.unit_price !== null ? data.quantity * data.unit_price : null
+        type: data.type === 'product' ? 1 : 2,
+        item_id: data.item_id !== null ? Number(data.item_id) : null,
+        total_price: data.quantity !== null && data.unit_price !== null ? data.quantity * data.unit_price : null
       }
 
       await updateRepairItems({
@@ -119,6 +129,7 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
       })
 
       reset()
+      setSelectedName(null)
       onClose()
     } catch (error: any) {
       const backError = error?.response?.data?.errors
@@ -135,22 +146,41 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
   }
 
   useEffect(() => {
-    if (repairItemData?.data) {
-      const item = repairItemData.data
+    if (!open) return
 
-      reset({
-        type: item.type ?? '',
-        name: item.name ?? null,
-        serial: item.serial ?? '',
-        expert_id: item.expert_id ?? null,
-        quantity: item.quantity ?? null,
-        unit_price: item.unit_price ?? null,
-        total_price: item.total_price ?? null,
-        description: item.description ?? '',
-        status: item.status ?? true
-      })
-    }
-  }, [reset, repairItemData])
+    const item = repairItemData?.data
+
+    if (!item) return
+
+    const type = item.itemable_type?.includes('Product')
+      ? 'product'
+      : item.itemable_type?.includes('Service')
+        ? 'service'
+        : ''
+
+    const itemId = item.itemable_id !== null && item.itemable_id !== undefined ? Number(item.itemable_id) : null
+
+    const expertName = typeof item.expert === 'string' ? item.expert.trim() : ''
+
+    const matchedExpert = experts.find(expert => {
+      const fullName = `${expert.first_name} ${expert.last_name}`.trim()
+
+      return fullName === expertName
+    })
+
+    reset({
+      type,
+      item_id: itemId,
+      serial: item.serial ?? '',
+      expert_id: matchedExpert?.id ?? null,
+      quantity: item.quantity !== null && item.quantity !== undefined ? Number(item.quantity) : null,
+      unit_price: item.unit_price !== null && item.unit_price !== undefined ? Number(item.unit_price) : null,
+      total_price: item.total_price !== null && item.total_price !== undefined ? Number(item.total_price) : null,
+      description: item.description ?? '',
+      status: item.status ?? true
+    })
+    setSelectedName(itemId)
+  }, [open, repairItemData, experts, reset])
 
   useEffect(() => {
     if (selectedType === 'service') {
@@ -166,9 +196,20 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
       open={open}
       onClose={onClose}
       TransitionComponent={Transition}
-      PaperProps={{ component: 'form', onSubmit: handleSubmit(onSubmit) }}
+      PaperProps={{
+        component: 'form',
+        onSubmit: handleSubmit(onSubmit)
+      }}
     >
-      <IconButton onClick={onClose} sx={{ position: 'absolute', top: 12, right: 12, zIndex: 1 }}>
+      <IconButton
+        onClick={onClose}
+        sx={{
+          position: 'absolute',
+          top: 12,
+          right: 12,
+          zIndex: 1
+        }}
+      >
         <CloseIcon />
       </IconButton>
 
@@ -180,7 +221,13 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
           backgroundColor: alpha(theme.palette.primary.main, 0.08)
         })}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2
+          }}
+        >
           <Box
             sx={{
               width: 44,
@@ -198,7 +245,15 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
           </Box>
 
           <Box>
-            <DialogTitle sx={{ p: 0, fontSize: '1.2rem', fontWeight: 700 }}>ویرایش</DialogTitle>
+            <DialogTitle
+              sx={{
+                p: 0,
+                fontSize: '1.2rem',
+                fontWeight: 700
+              }}
+            >
+              ویرایش
+            </DialogTitle>
 
             <Typography variant='body2' color='text.secondary' sx={{ mt: 0.5 }}>
               اطلاعات وارد کنید
@@ -256,7 +311,14 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
                   </Box>
 
                   {fieldState.error && (
-                    <Typography variant='caption' color='error' sx={{ mt: 0.5, display: 'block' }}>
+                    <Typography
+                      variant='caption'
+                      color='error'
+                      sx={{
+                        mt: 0.5,
+                        display: 'block'
+                      }}
+                    >
                       {fieldState.error.message}
                     </Typography>
                   )}
@@ -286,21 +348,47 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
           )}
 
           <Grid item md={12}>
+            {selectedType ? (
+              <Controller
+                name='item_id'
+                control={control}
+                render={({ field: { onChange }, fieldState }) => (
+                  <CustomAsyncAutocomplete
+                    url={nameUrl}
+                    label='نام'
+                    placeholder='انتخاب کنید'
+                    value={selectedName}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    onAddValue={newValue => {
+                      setSelectedName(newValue)
+                      onChange(newValue?.id ?? newValue ?? null)
+                    }}
+                  />
+                )}
+              />
+            ) : (
+              <TextField label='نام' placeholder='ابتدا نوع را انتخاب کنید' fullWidth disabled />
+            )}
+          </Grid>
+
+          <Grid item md={6}>
             <Controller
-              name='name'
+              name='expert_id'
               control={control}
               render={({ field, fieldState }) => (
                 <Autocomplete
-                  options={items}
-                  getOptionLabel={option => option.name}
-                  value={items.find(item => item.id === field.value) || null}
+                  options={experts}
+                  loading={isLoading}
+                  getOptionLabel={option => `${option.first_name} ${option.last_name}`}
+                  value={experts.find(expert => expert.id === field.value) ?? null}
                   onChange={(_, newValue) => {
                     field.onChange(newValue?.id ?? null)
                   }}
                   renderInput={params => (
                     <TextField
                       {...params}
-                      label='نام'
+                      label='کارشناس'
                       placeholder='انتخاب کنید'
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
@@ -308,37 +396,6 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
                   )}
                 />
               )}
-            />
-          </Grid>
-
-          <Grid item md={6}>
-            <Controller
-              name='expert_id'
-              control={control}
-              render={({ field, fieldState }) => {
-                const experts: Expert[] = upsertData?.data ?? []
-
-                return (
-                  <Autocomplete
-                    options={experts}
-                    loading={isLoading}
-                    getOptionLabel={option => `${option.first_name} ${option.last_name}`}
-                    value={experts.find((expert: any) => expert.id === field.value) ?? null}
-                    onChange={(_, newValue) => {
-                      field.onChange(newValue?.id ?? null)
-                    }}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label='کارشناس'
-                        placeholder='انتخاب کنید'
-                        error={!!fieldState.error}
-                        helperText={fieldState.error?.message}
-                      />
-                    )}
-                  />
-                )
-              }}
             />
           </Grid>
 
@@ -399,7 +456,6 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
                             −
                           </IconButton>
                         ),
-
                         endAdornment: (
                           <IconButton
                             size='small'
@@ -452,7 +508,14 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
                     slotProps={{
                       input: {
                         endAdornment: (
-                          <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                          <Typography
+                            variant='body2'
+                            color='text.secondary'
+                            sx={{
+                              ml: 1,
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
                             تومان
                           </Typography>
                         )
@@ -474,7 +537,14 @@ export default function RepairItemsEdit({ open, onClose, repairId, repairItemId 
                 input: {
                   readOnly: true,
                   endAdornment: (
-                    <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
+                    <Typography
+                      variant='body2'
+                      color='text.secondary'
+                      sx={{
+                        ml: 1,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
                       تومان
                     </Typography>
                   )

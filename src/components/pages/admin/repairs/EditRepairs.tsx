@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useParams, useRouter } from 'next/navigation'
 
@@ -47,6 +47,7 @@ type FormValue = {
 }
 
 export default function RepairsEdit() {
+  const [itemsTotal, setItemsTotal] = useState<number>(0)
   const { id } = useParams()
 
   const { mutateAsync: updateRepairs, isPending } = useUpdateRepairs()
@@ -55,7 +56,7 @@ export default function RepairsEdit() {
 
   const router = useRouter()
 
-  const { control, handleSubmit, reset, setError } = useForm<FormValue>({
+  const { control, handleSubmit, reset, setError, watch, setValue } = useForm<FormValue>({
     defaultValues: {
       device_type: null,
       name: '',
@@ -72,6 +73,14 @@ export default function RepairsEdit() {
       customer_description: ''
     }
   })
+
+  const discountAmount = watch('discount_amount') ?? 0
+  const payableAmount = Math.max(itemsTotal - discountAmount, 0)
+
+  useEffect(() => {
+    setValue('total_amount', itemsTotal)
+    setValue('payable_amount', payableAmount)
+  }, [itemsTotal, payableAmount, setValue])
 
   useEffect(() => {
     if (!repairsData || !upsertData?.data) return
@@ -224,7 +233,7 @@ export default function RepairsEdit() {
         <Divider />
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form id='repair-edit-form' onSubmit={handleSubmit(onSubmit)}>
             <Grid container spacing={6}>
               <Grid item xs={12} md={4}>
                 <Controller
@@ -463,7 +472,14 @@ export default function RepairsEdit() {
       </Card>
 
       <Card sx={{ mt: 4 }}>
-        <RepairItemsTable repairId={Number(id)} />
+        <RepairItemsTable
+          repairId={Number(id)}
+          onTotalChange={total => {
+            setItemsTotal(total)
+            setValue('total_amount', total)
+            setValue('payable_amount', Math.max(total - discountAmount, 0))
+          }}
+        />
       </Card>
 
       <Card sx={{ mt: 4 }}>
@@ -485,13 +501,9 @@ export default function RepairsEdit() {
                       fullWidth
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
-                      onChange={e => {
-                        const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
-
-                        field.onChange(inputValue === '' ? null : Number(inputValue))
-                      }}
                       slotProps={{
                         input: {
+                          readOnly: true,
                           endAdornment: (
                             <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
                               تومان
@@ -555,17 +567,12 @@ export default function RepairsEdit() {
                       value={formattedValue}
                       type='text'
                       label='مبلغ قابل پرداخت'
-                      placeholder='مبلغ قابل پرداخت را وارد کنید'
                       fullWidth
                       error={!!fieldState.error}
                       helperText={fieldState.error?.message}
-                      onChange={e => {
-                        const inputValue = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '')
-
-                        field.onChange(inputValue === '' ? null : Number(inputValue))
-                      }}
                       slotProps={{
                         input: {
+                          readOnly: true,
                           endAdornment: (
                             <Typography variant='body2' color='text.secondary' sx={{ ml: 1, whiteSpace: 'nowrap' }}>
                               تومان
@@ -589,6 +596,7 @@ export default function RepairsEdit() {
                 variant='contained'
                 color='primary'
                 type='submit'
+                form='repair-edit-form'
                 disabled={isPending}
               >
                 {isPending ? 'در حال ذخیره...' : 'ذخیره تغییرات'}

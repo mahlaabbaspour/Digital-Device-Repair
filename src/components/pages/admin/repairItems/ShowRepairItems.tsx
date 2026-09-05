@@ -78,6 +78,7 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
     >
       {icon}
     </Box>
+
     <Box sx={{ minWidth: 0 }}>
       <Typography
         variant='caption'
@@ -89,6 +90,7 @@ const InfoItem = ({ icon, label, value }: { icon: React.ReactNode; label: string
       >
         {label}
       </Typography>
+
       <Typography
         variant='body1'
         fontWeight={600}
@@ -124,7 +126,11 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
     return `${Number(price).toLocaleString('en-US')} تومان`
   }
 
-  const typeLabel = repairItem?.type === 'product' ? 'کالا' : repairItem?.type === 'service' ? 'خدمت' : '—'
+  const isProduct = repairItem?.itemable_type?.includes('Product') ?? false
+
+  const isService = repairItem?.itemable_type?.includes('Service') ?? false
+
+  const typeLabel = isProduct ? 'کالا' : isService ? 'خدمت' : '—'
 
   if (!open) {
     return null
@@ -225,6 +231,7 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
           </Box>
         ) : (
           <>
+            {/* Header */}
             <Box
               sx={theme => ({
                 mb: 4,
@@ -253,11 +260,7 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
                   color: 'primary.contrastText'
                 }}
               >
-                {repairItem.type === 'service' ? (
-                  <BuildOutlinedIcon fontSize='large' />
-                ) : (
-                  <Inventory2OutlinedIcon fontSize='large' />
-                )}
+                {isService ? <BuildOutlinedIcon fontSize='large' /> : <Inventory2OutlinedIcon fontSize='large' />}
               </Avatar>
 
               <Box
@@ -286,6 +289,7 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
               />
             </Box>
 
+            {/* Basic Information */}
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <InfoItem icon={<CategoryOutlinedIcon fontSize='small' />} label='نوع' value={typeLabel} />
@@ -295,21 +299,24 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
                 <InfoItem icon={<Inventory2OutlinedIcon fontSize='small' />} label='نام' value={repairItem.name} />
               </Grid>
 
-              {repairItem.type === 'product' && (
+              {/* Serial فقط برای کالا */}
+              {isProduct && (
                 <Grid item xs={12} md={6}>
                   <InfoItem icon={<QrCode2OutlinedIcon fontSize='small' />} label='سریال' value={repairItem.serial} />
                 </Grid>
               )}
 
+              {/* Expert */}
               <Grid item xs={12} md={6}>
                 <InfoItem
                   icon={<EngineeringOutlinedIcon fontSize='small' />}
                   label='کارشناس'
-                  value={repairItem.expert?.name || repairItem.expert_name || repairItem.expert_id}
+                  value={repairItem.expert}
                 />
               </Grid>
             </Grid>
 
+            {/* Price Information */}
             <Box sx={{ mt: 5 }}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={4}>
@@ -342,6 +349,7 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
               </Grid>
             </Box>
 
+            {/* Description */}
             <Box sx={{ mt: 5 }}>
               <Box
                 sx={{
