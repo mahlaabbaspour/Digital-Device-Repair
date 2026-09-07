@@ -456,7 +456,7 @@ export default function RepairsShow() {
       </Card>
 
       <Card sx={{ mt: 4 }}>
-        <RepairItemsTable repairId={repairId} readOnly />
+        <RepairItemsTable repairId={repairId} operationMode='show' />
       </Card>
 
       <Card sx={{ mt: 4 }}>

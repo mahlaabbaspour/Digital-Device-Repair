@@ -231,7 +231,6 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
           </Box>
         ) : (
           <>
-            {/* Header */}
             <Box
               sx={theme => ({
                 mb: 4,
@@ -289,7 +288,6 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
               />
             </Box>
 
-            {/* Basic Information */}
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <InfoItem icon={<CategoryOutlinedIcon fontSize='small' />} label='نوع' value={typeLabel} />
@@ -299,14 +297,12 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
                 <InfoItem icon={<Inventory2OutlinedIcon fontSize='small' />} label='نام' value={repairItem.name} />
               </Grid>
 
-              {/* Serial فقط برای کالا */}
               {isProduct && (
                 <Grid item xs={12} md={6}>
                   <InfoItem icon={<QrCode2OutlinedIcon fontSize='small' />} label='سریال' value={repairItem.serial} />
                 </Grid>
               )}
 
-              {/* Expert */}
               <Grid item xs={12} md={6}>
                 <InfoItem
                   icon={<EngineeringOutlinedIcon fontSize='small' />}
@@ -316,7 +312,6 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
               </Grid>
             </Grid>
 
-            {/* Price Information */}
             <Box sx={{ mt: 5 }}>
               <Grid container spacing={3}>
                 <Grid item xs={12} md={4}>
@@ -349,7 +344,6 @@ export default function RepairItemsShow({ open, onClose, repairItemId, repairId 
               </Grid>
             </Box>
 
-            {/* Description */}
             <Box sx={{ mt: 5 }}>
               <Box
                 sx={{

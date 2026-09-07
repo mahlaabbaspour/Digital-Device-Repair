@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 
-import { Button, Chip } from '@mui/material'
+import { Button, Chip, IconButton } from '@mui/material'
 
 import { BiPlus } from 'react-icons/bi'
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined'
 
 import Breadcrumb from '@/components/Breadcrumb'
 import CustomTable from '@/components/CustomTable'
@@ -41,9 +42,9 @@ export default function RepairsTable() {
   const dataStruct = {
     rowId: ['id'],
 
-    title: ['نام دستگاه', 'نام مشتری', 'وضعیت'],
+    title: ['نام دستگاه', 'نام مشتری', 'وضعیت', 'چاپ'],
 
-    name: [['name'], ['customer_code'], ['status_code']],
+    name: [['name'], ['customer_code'], ['status_code'], ['id']],
 
     customCol: [
       null,
@@ -73,14 +74,28 @@ export default function RepairsTable() {
             }
           />
         )
+      },
+      (value: any[]) => {
+        const repairId = value?.[0]
+
+        return (
+          <IconButton
+            size='small'
+            onClick={() => {
+              router.push(`/admin/repairs/${repairId}/invoice`)
+            }}
+          >
+            <PrintOutlinedIcon sx={{ color: 'primary.main' }} />
+          </IconButton>
+        )
       }
     ],
 
-    align: ['center', 'center', 'center'],
+    align: ['center', 'center', 'center', 'center'],
 
-    width: ['25%', '25%', '25%'],
+    width: ['25%', '25%', '25%', '25%'],
 
-    sort: ['name', 'customer', 'status_code'],
+    sort: ['name', 'customer', 'status_code', null],
 
     filter: [null, null, null, null]
   }

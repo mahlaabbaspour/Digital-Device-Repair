@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 
 import { usePathname } from 'next/navigation'
+
 import Link from 'next/link'
 
-// import { useSession } from 'next-auth/react'
 import {
   Box,
   TextField,
@@ -37,7 +37,6 @@ import {
   Chip
 } from '@mui/material'
 
-// import { RiCloseCircleFill } from 'react-icons/ri'
 import { IoTrashOutline } from 'react-icons/io5'
 import { HiOutlinePencilAlt } from 'react-icons/hi'
 import { BiShowAlt, BiTrash } from 'react-icons/bi'
@@ -45,17 +44,12 @@ import { FiAlertCircle, FiFilter } from 'react-icons/fi'
 import { AiOutlineClose } from 'react-icons/ai'
 
 import { ArrowDropDownIcon } from '@mui/x-date-pickers'
+
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toast } from 'react-toastify'
 
-import type { AxiosInstance } from 'axios'
-
 import { api } from '@/libs/api'
-
-// import { axiosConfig } from '@iconify/tools/lib/index.js'
-
-// import CustomTextField from './TextField'
 
 import tableStyles from '@core/styles/table.module.css'
 
@@ -86,7 +80,6 @@ function CustomTable({
   upsertData = {},
   selectedRowId = null,
   onRowClick,
-
   queryKey,
   baseUrl,
   apiClient = api,
@@ -109,33 +102,25 @@ function CustomTable({
     delete: () => true,
     edit: () => true,
     show: () => true,
-
     onShow: (row: any) => {},
     onEdit: (row: any) => {}
   },
   sortConfig = {
     columnParam: 'sort_by',
     directionParam: 'sort_order'
-  }
+  },
+  hideSearch = false,
+  hidePagination = false
 }: any) {
   const routeName = usePathname()
 
-  // const session: any = useSession()
   const queryClient = useQueryClient()
 
-  // const { data: session, status } = useSession()
-
-  // برای لاگین
-  // const token = session?.accessToken
-
-  // const token: any = session?.data?.myToken
   const [deleteFildId, setDeleteFildId] = useState('')
   const [openModal, setOpenModal] = useState('')
   const [loading, setLoading] = useState(false)
   const [filter, setFilter] = useState('')
-
   const [datas, setDatas] = useState<any[]>([])
-
   const [pageIndex, setPageIndex] = useState(0)
   const [pageSize, setPageSize] = useState(10)
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
@@ -153,14 +138,11 @@ function CustomTable({
   )
 
   const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null)
-
   const [activeFilter, setActiveFilter] = useState<any>(null)
-
   const [selectedFilters, setSelectedFilters] = useState<Record<string, number[]>>({})
   const [filterText, setFilterText] = useState('')
 
   const { data, isLoading } = useQuery({
-    // توی خطا پایین باید توکن باشه
     queryKey: [
       queryKey,
       {
@@ -173,35 +155,22 @@ function CustomTable({
         selectedFilters
       }
     ],
+
     queryFn: async () => {
       try {
-        // const sort = sortColumn ? `${sortColumn}_${sortDirection}` : ''
-        // const params = new URLSearchParams()
-
-        // params.append('page', String(pageIndex + 1))
-        // params.append('first', String(pageSize))
-
-        // if (filter) params.append('search', filter)
-
-        // if (sort) params.append('sort', sort)
-
         const params = new URLSearchParams()
 
         params.append('page', String(pageIndex + 1))
         params.append('first', String(pageSize))
 
-        if (filter) params.append('search', filter)
+        if (filter) {
+          params.append('search', filter)
+        }
 
         if (sortColumn) {
           params.append(sortConfig.columnParam, sortColumn)
           params.append(sortConfig.directionParam, sortDirection)
         }
-
-        // Object.entries(selectedFilters).forEach(([key, values]) => {
-        //   values.forEach(id => {
-        //     params.append(`${key}[]`, String(id))
-        //   })
-        // })
 
         Object.entries(selectedFilters).forEach(([key, values]) => {
           const selectedNames = values
@@ -217,21 +186,9 @@ function CustomTable({
           }
         })
 
-        // const res = await api.get(`${baseUrl}?page=${pageIndex + 1}&first=${pageSize}&search=${filter}&sort=${sort}`)
-        // const res = await apiClient.get(`${baseUrl}?${params.toString()}`)
         const separator = baseUrl.includes('?') ? '&' : '?'
 
         const res = await apiClient.get(`${baseUrl}${separator}${params.toString()}`)
-
-        // const res = await api.get(
-        //   `${baseUrl}?page=${pageIndex + 1}&first=${pageSize}&search=${filter}&order_column=${sortColumn}&order_type=${sortDirection}`
-
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${token}`
-        //     }
-        //   }
-        // )
 
         console.log('SORT REQUEST:', {
           order_column: sortColumn,
@@ -240,7 +197,6 @@ function CustomTable({
 
         console.log('SORT RESPONSE:', res.data?.data)
 
-        // console.log(baseUrl, 'base url')
         const data = await res.data
 
         return data
@@ -248,47 +204,25 @@ function CustomTable({
         throw error
       }
     },
+
     staleTime: cacheTime,
 
-    // توی خط پایین بعد از && باید !!token باشه
     enabled: Boolean(baseUrl)
-
-    // enabled: Boolean(baseUrl) && (!previousData || previousData.length === 0)
   })
-
-  // console.log(datas, 'datasss')
 
   const deleteFeild = async (id: string) => {
     setLoading(true)
 
     try {
       if (!baseUrl) {
-        setDatas((prev: any) => prev.filter((row: any) => getNestedValue(row, dataStruct.rowId)[0] !== id))
+        setDatas(prev => prev.filter(row => getNestedValue(row, dataStruct.rowId)[0] !== id))
 
         toast.success('عملیات با موفقیت انجام شد')
+
         setOpenModal('')
 
         return
       }
-
-      // const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}${baseUrl}/destroy/${id}`, {
-      //   method: 'DELETE',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Accept: 'application/json'
-
-      //     // Authorization: `Bearer ${token}`
-      //   }
-      // })
-
-      // const result = await apiClient.delete(`${baseUrl}/destroy/${id}`)
-
-      // if (result.ok) {
-      //   queryClient.invalidateQueries({ queryKey: [queryKey] })
-      //   setDatas((data: any) => data.filter((row: any) => getNestedValue(row, dataStruct.rowId)[0] !== id))
-      //   toast.success('عملیات با موفقیت انجام شد.')
-      //   setOpenModal('')
-      // }
 
       await apiClient.delete(`${baseUrl}/destroy/${id}`)
 
@@ -296,7 +230,7 @@ function CustomTable({
         queryKey: [queryKey]
       })
 
-      setDatas((data: any) => data.filter((row: any) => getNestedValue(row, dataStruct.rowId)[0] !== id))
+      setDatas(data => data.filter(row => getNestedValue(row, dataStruct.rowId)[0] !== id))
 
       toast.success('عملیات با موفقیت انجام شد.')
 
@@ -320,8 +254,6 @@ function CustomTable({
 
   const totalDataCount = previousData && previousData.length > 0 ? previousData.length : (data?.meta?.total ?? 0)
 
-  // const totalDataCount = datas.length
-
   function getNestedValue(obj: any, paths: any) {
     if (!Array.isArray(paths)) return []
 
@@ -329,20 +261,19 @@ function CustomTable({
   }
 
   const handleSelectedAll = (checked: boolean) => {
-    setSelectRows(checked ? datas.map((r: any) => getNestedValue(r, dataStruct.rowId)).map(([e]: any) => e) : [])
+    setSelectRows(checked ? datas.map(r => getNestedValue(r, dataStruct.rowId)).map(([e]: any) => e) : [])
   }
 
   const handleSelectRow = (id: any, checked: boolean) => {
-    setSelectRows((prev: any) => (checked ? [...prev, id] : prev.filter((item: any) => item != id)))
+    setSelectRows(prev => (checked ? [...prev, id] : prev.filter(item => item != id)))
   }
 
   const paginatedData =
     previousData && previousData.length > 0 ? datas.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize) : datas
 
-  // const paginatedData = datas.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize)
-
   return (
     <>
+      {/* Delete Modal */}
       <Modal
         aria-labelledby='transition-modal-title'
         aria-describedby='transition-modal-description'
@@ -357,11 +288,12 @@ function CustomTable({
       >
         <Fade in={openModal === 'delete'} className='relative'>
           <Box sx={{ ...style }}>
-            <div className='absolute  end-3 top-3'>
+            <div className='absolute end-3 top-3'>
               <IconButton onClick={() => setOpenModal('')}>
                 <AiOutlineClose />
               </IconButton>
             </div>
+
             <div className='w-full flex justify-center'>
               <IconButton color='error'>
                 <FiAlertCircle className='size-[60px]' />
@@ -371,6 +303,7 @@ function CustomTable({
             <Typography id='transition-modal-title' className='text-center' variant='h5' component='h5' sx={{ mt: 3 }}>
               حذف {deleteModal.title}
             </Typography>
+
             <Typography id='transition-modal-description' variant='subtitle1' className='text-center' sx={{ mt: 3 }}>
               آیا از حذف {deleteModal.text} مطمئن هستید؟
             </Typography>
@@ -380,9 +313,9 @@ function CustomTable({
                 <Button onClick={() => setOpenModal('')} variant='contained'>
                   انصراف
                 </Button>
+
                 {loading ? (
                   <Button color='error' variant='contained'>
-                    {' '}
                     <CircularProgress size={20} color='inherit' />
                   </Button>
                 ) : (
@@ -396,6 +329,7 @@ function CustomTable({
         </Fade>
       </Modal>
 
+      {/* All Delete Modal */}
       <Modal
         aria-labelledby='transition-modal-title'
         aria-describedby='transition-modal-description'
@@ -410,11 +344,12 @@ function CustomTable({
       >
         <Fade in={openModal === 'allDelete'} className='relative'>
           <Box sx={{ ...style }}>
-            <div className='absolute  end-3 top-3'>
+            <div className='absolute end-3 top-3'>
               <IconButton onClick={() => setOpenModal('')}>
                 <AiOutlineClose />
               </IconButton>
             </div>
+
             <div className='w-full flex justify-center'>
               <IconButton color='error'>
                 <FiAlertCircle className='size-[60px]' />
@@ -424,6 +359,7 @@ function CustomTable({
             <Typography id='transition-modal-title' className='text-center' variant='h5' component='h5' sx={{ mt: 3 }}>
               حذف گروهی {deleteModal.text}
             </Typography>
+
             <Typography id='transition-modal-description' variant='subtitle1' className='text-center' sx={{ mt: 3 }}>
               آیا از حذف گروهی {deleteModal.text} مطمئن هستید؟
             </Typography>
@@ -433,9 +369,9 @@ function CustomTable({
                 <Button onClick={() => setOpenModal('')} variant='contained'>
                   انصراف
                 </Button>
+
                 {loading ? (
                   <Button color='error' variant='contained'>
-                    {' '}
                     <CircularProgress size={20} color='inherit' />
                   </Button>
                 ) : (
@@ -456,14 +392,16 @@ function CustomTable({
               sx={{ textAlign: 'center', mb: 5 }}
               title={
                 <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
-                  {titleTable.title}{' '}
+                  {titleTable.title}
                 </Typography>
               }
               subheader={titleTable.description && <Typography variant='caption'>{titleTable.description}</Typography>}
             />
+
             <Divider component='hr' sx={{ mb: 4 }} />
           </>
         )}
+
         {cardHeader.status && (
           <CardHeader
             sx={{ padding: 5 }}
@@ -484,7 +422,15 @@ function CustomTable({
                     </IconButton>
                   </Tooltip>
                 )}
-                <DebouncedInput value={filter ?? ''} onChange={(value: string) => setFilter(String(value))} />
+
+                {!hideSearch && (
+                  <DebouncedInput
+                    value={filter ?? ''}
+                    onChange={(value: string) => {
+                      setFilter(String(value))
+                    }}
+                  />
+                )}
               </div>
             }
           />
@@ -503,6 +449,7 @@ function CustomTable({
                     />
                   </TableCell>
                 )}
+
                 {dataStruct.title.map((item: any, i: number) =>
                   !dataStruct.filter[i] ? (
                     <TableCell
@@ -595,94 +542,59 @@ function CustomTable({
                           {item}
                         </TableSortLabel>
                       </Box>
-                      {/* {!openFilter[i]?.status ? (
-                        <TableSortLabel
-                          onClick={() => null}
-                          active={sortColumn === dataStruct.sort[i]}
-                          direction={sortDirection}
-                          sx={dataStruct.sort[i] || { pointerEvents: 'none' }}
-                        >
-                          {item}
-                        </TableSortLabel>
-                      ) : (
-                        <div
-                          className={`absolute w-full flex justify-${dataStruct.align?.[i]} fade-in -translate-y-1/2`}
-                        >
-                          <TextField
-                            color='secondary'
-                            size='small'
-                            variant='outlined'
-                            placeholder='جستجو...'
-                            value={openFilter[i].value}
-                            sx={{
-                              textAlign: `${dataStruct.align?.[i]} !important`,
-                              mx: 1
-                            }}
-                            onChange={(e: any) => {
-                              const arr = [...openFilter]
-
-                              arr[i].value = e.target.value
-                              setOpenFilter(arr)
-                            }}
-                            InputProps={{
-                              endAdornment: (
-                                <IconButton
-                                  onClick={e => {
-                                    e.stopPropagation()
-                                    setOpenFilter((prev: any) => {
-                                      const next = [...prev]
-
-                                      next[i].status = false
-                                      next[i].value = ''
-
-                                      return next
-                                    })
-                                  }}
-                                  sx={{ p: 0, mr: '-10px' }}
-                                  color='default'
-                                >
-                                  <RiCloseCircleFill />
-                                </IconButton>
-                              )
-                            }}
-                          />
-                        </div>
-                      )} */}
                     </TableCell>
                   )
                 )}
+
                 {btnOperation?.status(true) && (
-                  <TableCell sx={{ textAlign: `${dataStruct.align?.[dataStruct.align.length - 1]} !important` }}>
+                  <TableCell
+                    sx={{
+                      textAlign: `${dataStruct.align?.[dataStruct.align.length - 1]} !important`
+                    }}
+                  >
                     عملیات
                   </TableCell>
                 )}
               </TableRow>
             </TableHead>
 
-            {/* باید قبل از isLoading !token باشه  */}
             {isLoading || isPending ? (
               <TableBody>
-                {new Array(6).fill(0).map((_: any, i: any) => (
+                {new Array(6).fill(0).map((_, i) => (
                   <TableRow key={i}>
                     {checkboxEnabled && (
                       <TableCell key={i}>
-                        <Box sx={{ width: 18, display: 'flex', justifyContent: dataStruct.align?.[i] }}>
+                        <Box
+                          sx={{
+                            width: 18,
+                            display: 'flex',
+                            justifyContent: dataStruct.align?.[i]
+                          }}
+                        >
                           <Skeleton animation='wave' height={30} sx={{ width: '100%' }} />
                         </Box>
                       </TableCell>
                     )}
-                    {dataStruct.title.map((_: any, i: any) => (
+
+                    {dataStruct.title.map((_, i) => (
                       <TableCell
                         key={i}
                         sx={{
                           width: dataStruct.width?.[i]
                         }}
                       >
-                        <Box sx={{ width: '100%', display: 'flex', justifyContent: dataStruct.align?.[i] }}>
+                        <Box
+                          sx={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: dataStruct.align?.[i]
+                          }}
+                        >
                           <Skeleton animation='wave' height={30} sx={{ width: '60%' }} />
                         </Box>
                       </TableCell>
                     ))}
+
                     {btnOperation?.status(true) && (
                       <TableCell>
                         <Box
@@ -709,7 +621,7 @@ function CustomTable({
               </TableBody>
             ) : (
               <TableBody>
-                {paginatedData?.map((row: any, i: any) => {
+                {paginatedData?.map((row: any) => {
                   const id = getNestedValue(row, dataStruct.rowId)[0]
 
                   return (
@@ -741,29 +653,32 @@ function CustomTable({
                           />
                         </TableCell>
                       )}
-                      {/* {dataStruct?.name?.map((item: any, i: any) => {
-                        return (
-                          <TableCell sx={{ textAlign: `${dataStruct.align[i]} !important` }} key={i}>
-                            {dataStruct.customCol?.[i](getNestedValue(row, item))}
-                          </TableCell>
-                        )
-                      })} */}
+
                       {dataStruct?.name?.map((item: any, i: any) => {
                         const custom = dataStruct?.customCol?.[i]
 
                         return (
                           <TableCell
-                            sx={{ width: dataStruct.width?.[i], textAlign: `${dataStruct.align[i]} !important` }}
+                            sx={{
+                              width: dataStruct.width?.[i],
+                              textAlign: `${dataStruct.align[i]} !important`
+                            }}
                             key={i}
                           >
                             {custom ? custom(getNestedValue(row, item), i, row) : getNestedValue(row, item)[0]}
                           </TableCell>
                         )
                       })}
+
                       {btnOperation?.status(row) && (
-                        <TableCell sx={{ textAlign: `${dataStruct.align[dataStruct.align.length - 1]} !important` }}>
+                        <TableCell
+                          sx={{
+                            textAlign: `${dataStruct.align[dataStruct.align.length - 1]} !important`
+                          }}
+                        >
                           {customOperation?.map((btn: any, i: any) => {
                             if (!btn.if(row)) return null
+
                             const href = btn.pth ? `${routeName}/${id}/${btn.path}` : undefined
 
                             return href ? (
@@ -784,10 +699,9 @@ function CustomTable({
                           })}
 
                           {btnOperation?.show(row) && (
-                            <Tooltip title={'نمایش'} arrow>
+                            <Tooltip title='نمایش' arrow>
                               <IconButton
                                 sx={{ scale: 1.03 }}
-                                // href={`${routeName}/${id}/show`}
                                 color='warning'
                                 onClick={() => {
                                   btnOperation?.onShow?.(row)
@@ -799,11 +713,10 @@ function CustomTable({
                           )}
 
                           {btnOperation?.edit(row) && (
-                            <Tooltip title={'ویرایش'} arrow>
+                            <Tooltip title='ویرایش' arrow>
                               <IconButton
                                 sx={{ scale: 0.95 }}
                                 color='primary'
-                                // href={`${routeName}/${id}/update`}
                                 onClick={() => {
                                   btnOperation?.onEdit?.(row)
                                 }}
@@ -814,7 +727,7 @@ function CustomTable({
                           )}
 
                           {btnOperation?.delete(row) && (
-                            <Tooltip title={'حذف'} arrow>
+                            <Tooltip title='حذف' arrow>
                               <IconButton
                                 sx={{ scale: 0.9 }}
                                 onClick={() => {
@@ -837,57 +750,72 @@ function CustomTable({
           </Table>
         </div>
 
-        <TablePagination
-          component={() => (
-            <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
-              <Typography color='text.disabled'>
-                {`نمایش ${pageIndex * pageSize} تا  ${(Math.min(pageIndex + 1) * pageSize, totalDataCount)} از ${totalDataCount}`}
-              </Typography>
+        {!hidePagination && (
+          <TablePagination
+            component={() => (
+              <div className='flex justify-between items-center flex-wrap pli-6 border-bs bs-auto plb-[12.5px] gap-2'>
+                <Typography color='text.disabled'>
+                  {`نمایش ${pageIndex * pageSize} تا ${Math.min(
+                    (pageIndex + 1) * pageSize,
+                    totalDataCount
+                  )} از ${totalDataCount}`}
+                </Typography>
 
-              <div className='flex items-center'>
-                <FormControl sx={{ minWidth: 65, marginRight: 3, height: 38 }} size='small'>
-                  <Select
+                <div className='flex items-center'>
+                  <FormControl
                     sx={{
-                      height: 38,
-                      color: 'GrayText',
-                      '& .MuiSelect-icon': { color: 'GrayText' }
+                      minWidth: 65,
+                      marginRight: 3,
+                      height: 38
                     }}
-                    IconComponent={props => <ArrowDropDownIcon {...props} />}
-                    labelId='demo-select-small-label'
-                    id='demo-select-small'
-                    value={pageSize}
-                    onChange={(e: any) => {
-                      setPageSize(e.target.value)
-                      setPageIndex(0)
-                    }}
+                    size='small'
                   >
-                    <MenuItem value={5}>5</MenuItem>
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={15}>15</MenuItem>
-                  </Select>
-                </FormControl>
-                <Pagination
-                  shape='rounded'
-                  color='primary'
-                  variant='tonal'
-                  count={Math.ceil(totalDataCount / pageSize)}
-                  page={pageIndex + 1}
-                  onChange={(_, page) => {
-                    setPageIndex(page - 1)
-                  }}
-                  showFirstButton
-                  showLastButton
-                />
+                    <Select
+                      sx={{
+                        height: 38,
+                        color: 'GrayText',
+                        '& .MuiSelect-icon': {
+                          color: 'GrayText'
+                        }
+                      }}
+                      IconComponent={props => <ArrowDropDownIcon {...props} />}
+                      labelId='demo-select-small-label'
+                      id='demo-select-small'
+                      value={pageSize}
+                      onChange={(e: any) => {
+                        setPageSize(e.target.value)
+                        setPageIndex(0)
+                      }}
+                    >
+                      <MenuItem value={5}>5</MenuItem>
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={15}>15</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <Pagination
+                    shape='rounded'
+                    color='primary'
+                    variant='tonal'
+                    count={Math.ceil(totalDataCount / pageSize)}
+                    page={pageIndex + 1}
+                    onChange={(_, page) => {
+                      setPageIndex(page - 1)
+                    }}
+                    showFirstButton
+                    showLastButton
+                  />
+                </div>
               </div>
-            </div>
-          )}
-          count={tableData.length ?? 0}
-          rowsPerPage={5}
-          page={pageIndex}
-          onPageChange={(_, page) => {
-            setPageIndex(page)
-          }}
-        />
+            )}
+            count={tableData.length ?? 0}
+            rowsPerPage={5}
+            page={pageIndex}
+            onPageChange={(_, page) => {
+              setPageIndex(page)
+            }}
+          />
+        )}
       </Card>
 
       <Popover
@@ -936,7 +864,14 @@ function CustomTable({
             }}
           >
             {(filterOptions[activeFilter] || []).filter((item: any) => item.name.includes(filterText)).length === 0 ? (
-              <Typography variant='body2' color='text.secondary' sx={{ textAlign: 'center', py: 2 }}>
+              <Typography
+                variant='body2'
+                color='text.secondary'
+                sx={{
+                  textAlign: 'center',
+                  py: 2
+                }}
+              >
                 دیتای موردنظر یافت نشد
               </Typography>
             ) : (
@@ -1038,10 +973,6 @@ function CustomTable({
             >
               پاک کردن
             </Button>
-
-            {/* <Button variant='contained' onClick={() => setFilterAnchor(null)}>
-              تایید
-            </Button> */}
           </Box>
         </Box>
       </Popover>
